@@ -1,5 +1,5 @@
 /*
-Property List Binary data - LGPL licensed
+Property List Integer number - LGPL licensed
 Copyright (C) 2011  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
@@ -20,21 +20,17 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
-public class PListData extends PListObject {
+public class NSInteger extends NSNumber {
 
-	private byte[] theData;
+	public final long theNumber;
 	
-	public PListData() {
-		theData = null;
-	}
-	
-	public PListData(byte[] theData) {
-		this.theData = theData;
+	public NSInteger(long theNumber) {
+		this.theNumber = theNumber;
 	}
 	
 	@Override
-	public byte[] getValue() {
-		return theData;
+	public Long getValue() {
+		return theNumber;
 	}
 
 }

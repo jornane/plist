@@ -1,5 +1,5 @@
 /*
-Property List Array - LGPL licensed
+Property List Real number - LGPL licensed
 Copyright (C) 2011  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
@@ -20,23 +20,17 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
-import java.util.ArrayList;
-import java.util.List;
+public class NSReal extends NSNumber{
 
-public class PListArray extends PListObject {
-
-	public final List<PListObject> theList;
+	public final double theNumber;
 	
-	public PListArray() {
-		this.theList = new ArrayList<PListObject>();
-	}
-	public PListArray(List<PListObject> theList) {
-		this.theList = theList;
+	public NSReal(double theNumber) {
+		this.theNumber = theNumber;
 	}
 	
 	@Override
-	public List<PListObject> getValue() {
-		return theList;
+	public Double getValue() {
+		return theNumber;
 	}
 
 }

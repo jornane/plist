@@ -1,5 +1,5 @@
 /*
-Property List Boolean - LGPL licensed
+Property List String - LGPL licensed
 Copyright (C) 2011  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
@@ -20,20 +20,17 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
-public class PListBoolean extends PListObject {
+public class NSString extends NSObject {
 
-	public static final PListBoolean TRUE = new PListBoolean(true);
-	public static final PListBoolean FALSE = new PListBoolean(false);
+	public final String theString;
 	
-	public final boolean theBoolean;
-	
-	public PListBoolean(boolean theBoolean) {
-		this.theBoolean = theBoolean;
+	public NSString(String theString) {
+		this.theString = theString;
 	}
 	
 	@Override
-	public Boolean getValue() {
-		return theBoolean ? Boolean.TRUE : Boolean.FALSE;
+	public String getValue() {
+		return theString;
 	}
 
 }

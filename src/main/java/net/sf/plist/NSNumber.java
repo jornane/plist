@@ -1,5 +1,5 @@
 /*
-Property List Date - LGPL licensed
+Property List Number - LGPL licensed
 Copyright (C) 2011  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
@@ -20,22 +20,9 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-public class PListDate extends PListObject {
-
-	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-	
-	public final Date theDate;
-	
-	public PListDate(Date theDate) {
-		this.theDate = theDate;
-	}
+public abstract class NSNumber extends NSObject {
 	
 	@Override
-	public Date getValue() {
-		return theDate;
-	}
-
+	public abstract Number getValue();
+	
 }

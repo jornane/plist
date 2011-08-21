@@ -1,5 +1,5 @@
 /*
-Property List Number - LGPL licensed
+Property List Object - LGPL licensed
 Copyright (C) 2011  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
@@ -20,9 +20,28 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
-public abstract class PListNumber extends PListObject {
+public abstract class NSObject {
+
+	public enum Types { STRING, INTEGER, REAL, DATE, DATA, BOOLEAN, DICT, ARRAY, KEY, UUID };
+	
+	NSObject() {/*not directly extendable outside this package*/}
+	
+	public abstract Object getValue();
+	
 	
 	@Override
-	public abstract Number getValue();
-	
+	public int hashCode() {
+		return getValue().hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof NSString
+			&& getValue().equals(((NSObject) o).getValue());
+	}
+	@Override
+	public String toString() {
+		Object val = getValue();
+		return val == null ? "null" : val.toString();
+	}
+
 }

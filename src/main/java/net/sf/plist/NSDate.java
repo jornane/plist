@@ -1,5 +1,5 @@
 /*
-Property List Object - LGPL licensed
+Property List Date - LGPL licensed
 Copyright (C) 2011  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
@@ -20,28 +20,22 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
-public abstract class PListObject {
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-	public enum Types { STRING, INTEGER, REAL, DATE, DATA, BOOLEAN, DICT, ARRAY, KEY, UUID };
+public class NSDate extends NSObject {
+
+	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	
-	PListObject() {/*not directly extendable outside this package*/}
+	public final Date theDate;
 	
-	public abstract Object getValue();
-	
-	
-	@Override
-	public int hashCode() {
-		return getValue().hashCode();
+	public NSDate(Date theDate) {
+		this.theDate = theDate;
 	}
+	
 	@Override
-	public boolean equals(Object o) {
-		return o instanceof PListString
-			&& getValue().equals(((PListObject) o).getValue());
-	}
-	@Override
-	public String toString() {
-		Object val = getValue();
-		return val == null ? "null" : val.toString();
+	public Date getValue() {
+		return theDate;
 	}
 
 }
