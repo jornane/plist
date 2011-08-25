@@ -1,5 +1,5 @@
 /*
-Property List Date - LGPL licensed
+ Property List Date - LGPL licensed
 Copyright (C) 2011  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
@@ -23,11 +23,18 @@ package net.sf.plist;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * The <code>NSDate</code> represents a date and time.
+ * 
+ * In this implementation, a <code>Date</code> is used to represent the <code>NSDate</code>.
+ * @see java.util.Date
+ */
 public class NSDate extends NSObject {
 
+	/** This is the format used for dates in PList files. */
 	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	
-	public final Date theDate;
+	private final Date theDate;
 	
 	public NSDate(Date theDate) {
 		this.theDate = theDate;

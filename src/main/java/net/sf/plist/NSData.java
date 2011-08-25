@@ -20,9 +20,18 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+/**
+ * The <code>NSData</code> represents a binary blob.
+ * 
+ * In this implementation, a primitive byte array or a outputstream is used to represent the <code>NSData</code>.
+ * @see java.io.InputStream
+ */
 public class NSData extends NSObject {
 
-	private byte[] theData;
+	private final byte[] theData;
 	
 	public NSData() {
 		theData = null;
@@ -35,6 +44,9 @@ public class NSData extends NSObject {
 	@Override
 	public byte[] getValue() {
 		return theData;
+	}
+	public InputStream getInputStream() {
+		return new ByteArrayInputStream(theData);
 	}
 
 }

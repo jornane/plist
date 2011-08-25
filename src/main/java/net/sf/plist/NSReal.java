@@ -20,9 +20,15 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
+/**
+ * The <code>NSReal</code> represents an real number of 64 bits in size.
+ * 
+ * In this implementation, a primitive <code>double</code> is used to represent the <code>NSInteger</code>.
+ * @see java.lang.Double
+ */
 public class NSReal extends NSNumber{
 
-	public final double theNumber;
+	private final double theNumber;
 	
 	public NSReal(double theNumber) {
 		this.theNumber = theNumber;
@@ -30,6 +36,9 @@ public class NSReal extends NSNumber{
 	
 	@Override
 	public Double getValue() {
+		return theNumber;
+	}
+	public double getDouble() {
 		return theNumber;
 	}
 

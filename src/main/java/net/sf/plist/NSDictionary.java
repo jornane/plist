@@ -20,12 +20,23 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
+/**
+ * The <code>NSDictionary</code> is a key/value store,
+ * with <code>String</code>s as keys and <code>NSObject</code>s as values.
+ * Usually, the root node of a PList is a <code>NSDictionary</code>. 
+ * 
+ * In this implementation, a <code>Map</code> is used to represent the <code>NSDictionary</code>.
+ * @see java.util.Map
+ */
 public class NSDictionary extends NSObject {
 
-	public final Map<String,NSObject> theDictionary;
+	private final Map<String,NSObject> theDictionary;
 	
 	public NSDictionary() {
 		this.theDictionary = new HashMap<String,NSObject>();
@@ -34,9 +45,19 @@ public class NSDictionary extends NSObject {
 		this.theDictionary = theMap;
 	}
 	
+	public synchronized void put(String key, NSObject value) {
+		getValue().put(key, value);
+	}
+	public NSObject get(String key) {
+		return getValue().get(key);
+	}
+	public Set<Entry<String, NSObject>> entrySet() {
+		return Collections.unmodifiableSet(getValue().entrySet());
+	}
+	
 	@Override
 	public Map<String,NSObject> getValue() {
-		return theDictionary;
+		return Collections.unmodifiableMap(theDictionary);
 	}
 
 }

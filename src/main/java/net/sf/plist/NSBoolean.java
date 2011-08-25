@@ -20,12 +20,18 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
+/**
+ * The <code>NSBoolean</code> represents a value of either <code>TRUE</code> or <code>FALSE</code>.
+ * 
+ * In this implementation, a primitive <code>boolean</code> is used to represent the <code>NSBoolean</code>.
+ * @see java.lang.Boolean
+ */
 public class NSBoolean extends NSObject {
 
 	public static final NSBoolean TRUE = new NSBoolean(true);
 	public static final NSBoolean FALSE = new NSBoolean(false);
 	
-	public final boolean theBoolean;
+	private final boolean theBoolean;
 	
 	public NSBoolean(boolean theBoolean) {
 		this.theBoolean = theBoolean;
@@ -34,6 +40,9 @@ public class NSBoolean extends NSObject {
 	@Override
 	public Boolean getValue() {
 		return theBoolean ? Boolean.TRUE : Boolean.FALSE;
+	}
+	public boolean getBoolean() {
+		return theBoolean;
 	}
 
 }

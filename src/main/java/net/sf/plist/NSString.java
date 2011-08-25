@@ -20,9 +20,13 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
+/**
+ * The <code>NSString</code> represents a string.
+ * @see java.lang.String
+ */
 public class NSString extends NSObject {
 
-	public final String theString;
+	private final String theString;
 	
 	public NSString(String theString) {
 		this.theString = theString;

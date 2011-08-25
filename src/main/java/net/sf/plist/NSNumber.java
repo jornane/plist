@@ -20,6 +20,11 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
+/**
+ * The <code>NSNumber</code> represents an number. The NSNumber is either an <code>NSInteger</code> or an <code>NSReal</code>.
+ * 
+ * @see java.lang.Number
+ */
 public abstract class NSNumber extends NSObject {
 	
 	@Override
