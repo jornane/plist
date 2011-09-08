@@ -21,25 +21,41 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist;
 
 /**
- * The <code>NSReal</code> represents an real number of 64 bits in size.
+ * <p>Represents an real number of 64 bits in size.</p>
  * 
- * In this implementation, a primitive <code>double</code> is used to represent the <code>NSInteger</code>.
- * @see java.lang.Double
+ * <p>In this implementation, a primitive <code>double</code> is used to represent the {@link NSReal}.</p>
+ * @see Double
  */
 public class NSReal extends NSNumber{
 
-	private final double theNumber;
+	private final double theDouble;
 	
-	public NSReal(double theNumber) {
-		this.theNumber = theNumber;
+	/**
+	 * Constructor.
+	 * @param theDouble value of the new object
+	 */
+	public NSReal(double theDouble) {
+		this.theDouble = theDouble;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see #getDouble()
+	 */
 	@Override
 	public Double getValue() {
-		return theNumber;
+		return number();
 	}
+	/**
+	 * Get the contents of this object as a <code>double</code>.
+	 * @return the double
+	 */
 	public double getDouble() {
-		return theNumber;
+		return theDouble;
+	}
+	/** {@inheritDoc} */
+	public Double number() {
+		return theDouble;
 	}
 
 }

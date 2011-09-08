@@ -21,32 +21,51 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 /**
- * The <code>NSData</code> represents a binary blob.
+ * <p>Represents a binary blob.</p>
  * 
- * In this implementation, a primitive byte array or a outputstream is used to represent the <code>NSData</code>.
- * @see java.io.InputStream
+ * <p>In this implementation, a primitive byte array or a {@link ByteArrayInputStream} is used to represent the {@link NSData}.</p>
+ * @see ByteArrayInputStream
  */
 public class NSData extends NSObject {
 
 	private final byte[] theData;
 	
-	public NSData() {
-		theData = null;
-	}
-	
+	/**
+	 * Constructor.
+	 * @param theData value of the new object
+	 */
 	public NSData(byte[] theData) {
 		this.theData = theData;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * For performance reasons, it's recommended to use {@link #stream()} instead.
+	 * @see #data()
+	 */
 	@Override
 	public byte[] getValue() {
-		return theData;
+		return data();
 	}
-	public InputStream getInputStream() {
+	/**
+	 * Get a {@link ByteArrayInputStream} which can be used to read the contents of this object.
+	 * @return the {@link ByteArrayInputStream}
+	 */
+	public ByteArrayInputStream stream() {
 		return new ByteArrayInputStream(theData);
+	}
+	/**
+	 * <p>Return the contents of this object as primitive array.<br />
+	 * Because the array is copied to keep this object immutable,
+	 * it's recommended to use {@link #stream()} instead.</p>
+	 * @return the array
+	 */
+	public byte[] data() {
+		byte[] result = new byte[theData.length];
+		System.arraycopy(theData, 0, result, 0, theData.length);
+		return result;
 	}
 
 }

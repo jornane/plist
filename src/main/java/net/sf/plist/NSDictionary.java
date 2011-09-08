@@ -21,43 +21,62 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * The <code>NSDictionary</code> is a key/value store,
- * with <code>String</code>s as keys and <code>NSObject</code>s as values.
- * Usually, the root node of a PList is a <code>NSDictionary</code>. 
+ * <p>A key/value store,
+ * with {@link String} as keys and {@link NSObject} as values.<br />
+ * Usually, the root node of a Property List is a {@link NSDictionary}.</p> 
  * 
- * In this implementation, a <code>Map</code> is used to represent the <code>NSDictionary</code>.
- * @see java.util.Map
+ * <p>In this implementation, a {@link Map} is used to represent the {@link NSDictionary}.</p>
+ * @see Map
  */
 public class NSDictionary extends NSObject {
 
 	private final Map<String,NSObject> theDictionary;
 	
-	public NSDictionary() {
-		this.theDictionary = new HashMap<String,NSObject>();
-	}
+	/**
+	 * Constructor .
+	 * @param theMap value of the new object
+	 */
 	public NSDictionary(Map<String,NSObject> theMap) {
-		this.theDictionary = theMap;
+		this.theDictionary = Collections.unmodifiableMap(theMap);
 	}
-	
-	public synchronized void put(String key, NSObject value) {
-		getValue().put(key, value);
-	}
+	/**
+	 * Get the {@link NSObject} associated with <code>key</code>.
+	 * @param key The key to retrieve
+	 * @return The {@link NSObject} associated with <code>key</code>
+	 * @see Map#get(Object)
+	 */
 	public NSObject get(String key) {
-		return getValue().get(key);
+		return map().get(key);
 	}
+	/**
+	 * Get the entryset for this {@link NSObject}.
+	 * @return the entryset
+	 * @see Map#entrySet()
+	 */
 	public Set<Entry<String, NSObject>> entrySet() {
-		return Collections.unmodifiableSet(getValue().entrySet());
+		return map().entrySet();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see #map()
+	 */
 	@Override
 	public Map<String,NSObject> getValue() {
-		return Collections.unmodifiableMap(theDictionary);
+		return map();
+	}
+	/**
+	 * Get the contents of this object as a {@link Map}.
+	 * @return the {@link Map}
+	 * @see Map
+	 */
+	public Map<String, NSObject> map() {
+		return theDictionary;
 	}
 
 }

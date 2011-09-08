@@ -21,28 +21,29 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist;
 
 /**
- * Every PList contains one or more <code>NSObject</code>s.
- * Every different extension of the <code>NSObject</code> holds a certain kind of value,
- * for example the <code>NSString</code> holds a <code>String</code> and the <code>NSDate</code> holds a <code>Date</code>.
- * Some <code>NSObject</code>s can hold other <code>NSObject</code>s, thus making a tree.
- * Those are <code>NSDictionary</code> and <code>NSArray</code>.
+ * <p>Every Property List contains one or more {@link NSObject}s.</p>
+ * <p>Every different extension holds a certain kind of value,
+ * for example the {@link NSString} holds a {@link String} and the {@link NSDate} holds a {@link java.util.Date}.</p>
+ * <p>Some {@link NSObject}s can hold other {@link NSObject}s, thus making a tree.<br />
+ * Those are {@link NSDictionary} and {@link NSArray}.</p>
  * 
- * The value of this <code>NSObject</code> can be requested through the getValue method.
+ * <p>The value of this object can be requested through the {@link #getValue()} method.</p>
  * 
- * The <code>hashCode</code>, <code>equals</code> and <code>toString</code> methods are overridden to use the respective functions of the value object. 
+ * <p>The {@link #hashCode()}, {@link #equals(Object)} and {@link #toString()} methods are overridden to use the respective functions of the value object.</p> 
  */
 public abstract class NSObject {
 
-	public static enum Type { STRING, INTEGER, REAL, DATE, DATA, BOOLEAN, DICT, ARRAY, KEY, UUID };
-	
 	NSObject() {/*not directly extendable outside this package*/}
 	
 	/**
-	 * Get the unmodifiable value of this <code>NSObject</code> 
-	 * @return the value of this <code>NSObject</code>
+	 * Get the unmodifiable value of this object.
+	 * @return the value of this object
 	 */
 	public abstract Object getValue();
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -50,6 +51,9 @@ public abstract class NSObject {
 		result = prime * result + ((getValue() == null) ? 0 : getValue().hashCode());
 		return result;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -64,12 +68,12 @@ public abstract class NSObject {
 			return false;
 		return true;
 	}
-	@Override
 	/**
-	 * Get the String representation of this <code>NSObject</code>s value.
-	 * @returns the <code>String</code> representation for this <code>NSObject</code>.
-	 * @see java.lang.Object.toString
+	 * Get the String representation of this objects value.
+	 * @return the {@link java.lang.String} representation for this object
+	 * @see Object#toString()
 	 */
+	@Override
 	public String toString() {
 		Object val = getValue();
 		return val == null ? "null" : val.toString();

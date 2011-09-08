@@ -21,25 +21,41 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist;
 
 /**
- * The <code>NSInteger</code> represents an integer number between -2^63 and 2^63-1.
+ * <p>Represents an integer number between -2^63 and 2^63-1.</p>
  * 
- * In this implementation, a primitive <code>long</code> is used to represent the <code>NSInteger</code>.
- * @see java.lang.Long
+ * <p>In this implementation, a primitive <code>long</code> is used to represent the {@link NSInteger}.</p>
+ * @see Long
  */
 public class NSInteger extends NSNumber {
 
-	private final long theNumber;
+	private final long theLong;
 	
-	public NSInteger(long theNumber) {
-		this.theNumber = theNumber;
+	/**
+	 * Constructor.
+	 * @param theLong value of the new object
+	 */
+	public NSInteger(long theLong) {
+		this.theLong = theLong;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see #number()
+	 */
 	@Override
 	public Long getValue() {
-		return theNumber;
+		return number();
 	}
+	/**
+	 * Get the contents of this object as a <code>long</code>.
+	 * @return the long
+	 */
 	public long getLong() {
-		return theNumber;
+		return theLong;
+	}
+	/** {@inheritDoc} */
+	public Long number() {
+		return theLong;
 	}
 
 }

@@ -20,14 +20,41 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
+import java.math.BigInteger;
+
 /**
- * The <code>NSNumber</code> represents an number. The NSNumber is either an <code>NSInteger</code> or an <code>NSReal</code>.
- * 
- * @see java.lang.Number
+ * <p>Represents a number.<br />
+ * The {@link NSNumber} is either an {@link NSInteger} or a {@link NSReal}.</p>
+ * @see Number
  */
 public abstract class NSNumber extends NSObject {
 	
+	/**
+	 * {@inheritDoc}
+	 * @see #number()
+	 */
 	@Override
-	public abstract Number getValue();
+	public Number getValue() {
+		return number();
+	}
+	/**
+	 * Get the contents of this object as a {@link Number}.
+	 * @return the {@link Number}
+	 */
+	public abstract Number number();
+
+	/**
+	 * Construct a {@link NSInteger} or {@link NSReal}.
+	 * @param number The number.
+	 */
+	public static NSNumber createInstance(Number number) {
+		if (number instanceof BigInteger
+			|| number instanceof Byte
+			|| number instanceof Integer
+			|| number instanceof Long
+			|| number instanceof Short)
+			return new NSInteger(number.longValue());
+		return new NSReal(number.doubleValue());
+	}
 	
 }

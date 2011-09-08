@@ -21,17 +21,25 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist;
 
 /**
- * The <code>NSString</code> represents a string.
- * @see java.lang.String
+ * <p>Represents a string.</p>
+ * @see String
  */
 public class NSString extends NSObject {
 
 	private final String theString;
 	
+	/**
+	 * Constructor.
+	 * @param theString value of the new object
+	 */
 	public NSString(String theString) {
 		this.theString = theString;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see #toString()
+	 */
 	@Override
 	public String getValue() {
 		return theString;

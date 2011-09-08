@@ -24,10 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * The <code>NSDate</code> represents a date and time.
+ * <p>Represents a date and time.</p>
  * 
- * In this implementation, a <code>Date</code> is used to represent the <code>NSDate</code>.
- * @see java.util.Date
+ * <p>In this implementation, a {@link Date} is used to represent the {@link NSDate}.</p>
+ * @see Date
  */
 public class NSDate extends NSObject {
 
@@ -36,13 +36,34 @@ public class NSDate extends NSObject {
 	
 	private final Date theDate;
 	
+	/**
+	 * Constructor.
+	 * @param theDate value of the new object
+	 */
 	public NSDate(Date theDate) {
 		this.theDate = theDate;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see #date()
+	 */
 	@Override
 	public Date getValue() {
-		return theDate;
+		return date();
+	}
+	/**
+	 * Get the {@link Date} represented by this object.
+	 * @return the {@link Date}
+	 */
+	public Date date() {
+		return new Date(time());
+	}
+	/**
+	 * @see Date#getTime()
+	 */
+	public long time() {
+		return theDate.getTime();
 	}
 
 }

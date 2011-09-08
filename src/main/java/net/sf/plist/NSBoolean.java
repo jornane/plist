@@ -21,27 +21,46 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist;
 
 /**
- * The <code>NSBoolean</code> represents a value of either <code>TRUE</code> or <code>FALSE</code>.
+ * <p>Represents a value of either {@link Boolean#TRUE} or {@link Boolean#FALSE}.</p>
  * 
- * In this implementation, a primitive <code>boolean</code> is used to represent the <code>NSBoolean</code>.
- * @see java.lang.Boolean
+ * <p>In this implementation, a primitive <code>boolean</code> is used to represent the {@link NSBoolean}.</p>
+ * @see Boolean
  */
 public class NSBoolean extends NSObject {
 
+	/** Represents {@link Boolean#TRUE} */
 	public static final NSBoolean TRUE = new NSBoolean(true);
+	/** Represents {@link Boolean#FALSE} */
 	public static final NSBoolean FALSE = new NSBoolean(false);
 	
 	private final boolean theBoolean;
 	
+	/**
+	 * Constructor.
+	 * @param theBoolean value of the new object
+	 */
 	public NSBoolean(boolean theBoolean) {
 		this.theBoolean = theBoolean;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see #bool()
+	 * @see net.sf.plist.NSBoolean#bool()
+	 */
 	@Override
 	public Boolean getValue() {
-		return theBoolean ? Boolean.TRUE : Boolean.FALSE;
+		return bool() ? Boolean.TRUE : Boolean.FALSE;
 	}
-	public boolean getBoolean() {
+	/** @see net.sf.plist.NSBoolean#bool() */
+	public boolean isTrue() {
+		return bool();
+	}
+	/**
+	 * Get the boolean represented by this object.
+	 * @return the boolean
+	 */
+	public boolean bool() {
 		return theBoolean;
 	}
 

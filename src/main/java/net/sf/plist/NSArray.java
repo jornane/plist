@@ -20,62 +20,59 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * The <code>NSArray</code> is an ordered list of <code>NSObject</code>s,
+ * <p>Ordered list of {@link NSObject}s.</p>
  * 
- * In this implementation, a <code>List</code> is used to represent the <code>NSArray</code>.
- * @see java.util.List
+ * <p>In this implementation, a {@link List} is used to represent the {@link NSArray}.</p>
+ * @see List
  */
 public class NSArray extends NSObject {
 
 	private final List<NSObject> theList;
 	
-	public NSArray() {
-		this.theList = new ArrayList<NSObject>();
-	}
+	/**
+	 * Constructor.
+	 * @param theList the contents of new object
+	 */
 	public NSArray(List<NSObject> theList) {
-		this.theList = theList;
+		this.theList = Collections.unmodifiableList(theList);
 	}
 	
 	/**
-	 * Add an <code>NSObject</code> to this <code>NSArray</code>
-	 * @param value the value to add
+	 * Get {@link NSObject} corresponding to index from this object.
+	 * @param index index of object to retrieve
 	 */
-	public void add(NSObject value) {
-		getValue().add(value);
+	public NSObject get(int index) {
+		return getValue().get(index);
 	}
 	/**
-	 * Remove an <code>NSObject</code> from this <code>NSArray</code>
-	 * @param value the value to remove
-	 */
-	public void remove(NSObject value) {
-		getValue().remove(value);
-	}
-	/**
-	 * Remove an index from this <code>NSArray</code>
-	 * @param index the index to remove
-	 */
-	public void remove(int index) {
-		getValue().remove(index);
-	}
-	/**
-	 * Get an unmodifiable <code>List</code> containing all values of this <code>NSArray</code>.
-	 * @return the <code>List</code>
+	 * Get an unmodifiable {@link List} containing all values of this object.
+	 * @return the {@link List}
 	 */
 	public List<NSObject> list() {
-		return Collections.unmodifiableList(getValue());
+		return theList;
 	}
 	/**
-	 * Get an unmodifiable <code>List</code> containing all values of this <code>NSArray</code>.
-	 * @return the <code>List</code>
+	 * <p>Get an array containing all values of this object.
+	 * Changes made in the array will not affect this object.</p>
+	 * 
+	 * <p>When iterating through all items in this object,
+	 * the {@link #list()} method is a better choice for performance reasons.</p> 
+	 * @return the array
+	 */
+	public NSObject[] array() {
+		return theList.toArray(new NSObject[0]);
+	}
+	/**
+	 * {@inheritDoc}
+	 * @see #list()
 	 */
 	@Override
 	public List<NSObject> getValue() {
-		return Collections.unmodifiableList(theList);
+		return list();
 	}
 
 }
