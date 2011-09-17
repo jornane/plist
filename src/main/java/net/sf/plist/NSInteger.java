@@ -54,8 +54,9 @@ public class NSInteger extends NSNumber {
 		return theLong;
 	}
 	/** {@inheritDoc} */
+	@Override
 	public Long number() {
-		return theLong;
+		return new Long(theLong);
 	}
 
 }

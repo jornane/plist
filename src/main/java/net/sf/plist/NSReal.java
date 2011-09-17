@@ -54,8 +54,9 @@ public class NSReal extends NSNumber{
 		return theDouble;
 	}
 	/** {@inheritDoc} */
+	@Override
 	public Double number() {
-		return theDouble;
+		return new Double(theDouble);
 	}
 
 }
