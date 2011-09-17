@@ -22,6 +22,7 @@ package net.sf.plist;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * <p>Represents a date and time.</p>
@@ -31,8 +32,15 @@ import java.util.Date;
  */
 public class NSDate extends NSObject {
 
-	/** This is the format used for dates in PList files. */
-	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	/**
+	 * Get the format used for dates in Property List files
+	 * @return the date format
+	 */
+	public static SimpleDateFormat getFormatter() {
+		SimpleDateFormat result = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		result.setTimeZone(TimeZone.getTimeZone("GMT"));
+		return result;
+	}
 	
 	private final Date theDate;
 	
