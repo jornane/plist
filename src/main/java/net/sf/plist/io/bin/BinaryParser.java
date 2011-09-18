@@ -410,9 +410,5 @@ public class BinaryParser extends PropertyListParser {
 			return getInteger(intData);
 		} else return lengthMask;
 	}
-	
-	public static void main(String... args) throws PropertyListException, IOException, DOMException, ParserConfigurationException {
-		new DOMXMLWriter(parse(new File(args[0]))).write(System.out);
-	}
 
 }

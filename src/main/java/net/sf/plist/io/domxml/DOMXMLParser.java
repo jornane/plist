@@ -250,10 +250,5 @@ public final class DOMXMLParser extends PropertyListParser {
 	protected static NSString parseString(Node node) {
 		return new NSString(node.getTextContent());
 	}
-	
-	public static void main(String... args) throws PropertyListException, IOException, ParserConfigurationException {
-		NSObject obj = new DOMXMLParser(new File("plist.plist")).parse();
-		new DOMXMLWriter(obj).write(System.out);
-	}
 
 }
