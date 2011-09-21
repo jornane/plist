@@ -95,9 +95,9 @@ public class BinaryParser extends PropertyListParser {
 	final private RandomAccessFile stream;
 	
 	/** Size of offset entries in bytes */
-	final protected int offsetEntrySize;
+	final protected byte offsetEntrySize;
 	/** Size of object references in bytes */
-	final protected int objRefSize;
+	final protected byte objRefSize;
 	/** Number of objects in stream */
 	final protected int numObjects;
 	/** Starting address of the root object */
@@ -153,8 +153,8 @@ public class BinaryParser extends PropertyListParser {
 			stream.read(metaData);
 			
 			// Read metadata
-			offsetEntrySize = metaData[0]&0xFF;
-			objRefSize = metaData[1]&0xFF;
+			offsetEntrySize = metaData[0];
+			objRefSize = metaData[1];
 			numObjects = getInteger(metaData[6],metaData[7],metaData[8],metaData[9]);
 			rootAddr = 8L+getLong(metaData[10],metaData[11],metaData[12],metaData[13],metaData[14],metaData[15],metaData[16],metaData[17]);
 			offsetTableOffset = getLong(metaData[18],metaData[19],metaData[20],metaData[21],metaData[22],metaData[23],metaData[24],metaData[25]);
