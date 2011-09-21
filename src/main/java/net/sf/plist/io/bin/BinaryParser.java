@@ -30,14 +30,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.DOMException;
-
 import net.sf.plist.*;
 import net.sf.plist.io.PropertyListException;
 import net.sf.plist.io.PropertyListParser;
-import net.sf.plist.io.domxml.DOMXMLWriter;
 
 /**
  * Parses binary property list files to a tree consisting of {@link NSObject}s
