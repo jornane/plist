@@ -274,10 +274,5 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 	protected static NSString parseString(Node node) {
 		return new NSString(node.getTextContent());
 	}
-	
-	public static void main(String... args) throws PropertyListException, IOException, ParserConfigurationException {
-		 NSObject obj = new DOMXMLParser(new File(args[0])).parse();
-		 new DOMXMLWriter(obj).write(System.out);
-	}
 
 }
