@@ -20,6 +20,7 @@ This file was obtained from http://plist.sf.net/
 */
 package net.sf.plist.io.domxml;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,6 +42,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import util.Base64;
@@ -48,7 +51,7 @@ import util.Base64;
 /**
  * Parses XML property list files to a tree consisting of {@link NSObject}s
  */
-public final class DOMXMLParser extends PropertyListParser {
+public final class DOMXMLParser extends PropertyListParser implements EntityResolver {
 
 	/** The XML document */
 	protected Document doc;
@@ -57,6 +60,21 @@ public final class DOMXMLParser extends PropertyListParser {
 	/** The DocumentBuilder */
 	final protected DocumentBuilder db;
 	
+	/** DTD obtained from http://www.apple.com/DTDs/PropertyList-1.0.dtd, with comments removed */
+	public static final String DTD = "<!ENTITY % plistObject \"(array | data | date | dict | real | integer | string | true | false )\" >"
+	                        + "\n" + "<!ELEMENT plist %plistObject;>"
+	                        + "\n" + "<!ATTLIST plist version CDATA \"1.0\" >"
+	                        + "\n" + "<!ELEMENT array (%plistObject;)*>"
+	                        + "\n" + "<!ELEMENT dict (key, %plistObject;)*>"
+	                        + "\n" + "<!ELEMENT key (#PCDATA)>"
+	                        + "\n" + "<!ELEMENT string (#PCDATA)>"
+	                        + "\n" + "<!ELEMENT data (#PCDATA)>"
+	                        + "\n" + "<!ELEMENT date (#PCDATA)>"
+	                        + "\n" + "<!ELEMENT true EMPTY>"
+	                        + "\n" + "<!ELEMENT false EMPTY>"
+	                        + "\n" + "<!ELEMENT real (#PCDATA)>"
+	                        + "\n" + "<!ELEMENT integer (#PCDATA)>";
+	                               	
 	/** @see PropertyListParser#PropertyListParser(File) */
 	public DOMXMLParser(File file) throws IOException, PropertyListException {
 		this(file, new FileInputStream(file));
@@ -69,6 +87,7 @@ public final class DOMXMLParser extends PropertyListParser {
 		super(file, input);
 		try {
 			db = dbf.newDocumentBuilder();
+			db.setEntityResolver(this);
 		} catch (ParserConfigurationException e) {
 			// This happens when the configuration of DocumentBuilderFactory is incorrect.
 			// Since we're not changing this configuration,
@@ -82,6 +101,11 @@ public final class DOMXMLParser extends PropertyListParser {
 		} catch (SAXException e) {
 			throw new PropertyListException("The property list is not a valid XML document.", e);
 		}
+	}
+	
+	/** {@inheritDoc} */
+	public InputSource resolveEntity(String publicId, String systemId) {
+		return new InputSource(new ByteArrayInputStream(DTD.getBytes()));
 	}
 	
 	/** {@inheritDoc} */
@@ -249,6 +273,11 @@ public final class DOMXMLParser extends PropertyListParser {
 	 */
 	protected static NSString parseString(Node node) {
 		return new NSString(node.getTextContent());
+	}
+	
+	public static void main(String... args) throws PropertyListException, IOException, ParserConfigurationException {
+		 NSObject obj = new DOMXMLParser(new File(args[0])).parse();
+		 new DOMXMLWriter(obj).write(System.out);
 	}
 
 }
