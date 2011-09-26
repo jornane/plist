@@ -78,7 +78,7 @@ public abstract class PropertyListWriter {
 	{
 		switch(format) {
 			case BIN:throw new UnsupportedOperationException("Binary property list format is not supported yet.");
-			case XML:new DOMXMLWriter(root).write(stream);
+			case XML:new DOMXMLWriter(root).write(stream);break;
 			case TXT:throw new UnsupportedOperationException("Text property list format is not supported yet.");
 			default:throw new NullPointerException("format");
 		}
