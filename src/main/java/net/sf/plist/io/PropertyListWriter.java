@@ -28,7 +28,6 @@ import java.io.OutputStream;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.plist.NSObject;
-import net.sf.plist.io.bin.BinaryWriter;
 import net.sf.plist.io.domxml.DOMXMLWriter;
 
 /**
