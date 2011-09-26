@@ -94,7 +94,7 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 			// i'll assume that it isn't our fault.
 			// If you think it is, please report it.
 			// https://sourceforge.net/p/plist/tickets/
-			throw new UnsupportedOperationException(e);
+			throw new UnsupportedOperationException("ParserConfigurationException occurred, this should never happen. Please report it on http://plist.sf.net .", e);
 		}
 		try {
 			doc = file==null ? db.parse(input) : db.parse(file);

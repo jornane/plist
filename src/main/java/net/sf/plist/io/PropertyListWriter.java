@@ -25,8 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import net.sf.plist.NSObject;
 import net.sf.plist.io.domxml.DOMXMLWriter;
 
@@ -77,7 +75,7 @@ public abstract class PropertyListWriter {
 	 * @throws IOException when writing to the stream fails
 	 */
 	public static void write(NSObject root, OutputStream stream, Format format)
-		throws PropertyListException, ParserConfigurationException, IOException
+		throws PropertyListException, IOException
 	{
 		switch(format) {
 			case BIN:throw new UnsupportedOperationException("Binary property list format is not supported yet.");
@@ -91,7 +89,7 @@ public abstract class PropertyListWriter {
 	 * @see PropertyListWriter#write(NSObject, OutputStream, Format)
 	 */
 	public static void write(NSObject root, File file)
-		throws PropertyListException, ParserConfigurationException, IOException
+		throws PropertyListException, IOException
 	{
 		write(root, file, defaultFormat);
 	}
@@ -105,7 +103,7 @@ public abstract class PropertyListWriter {
 	 * @throws IOException when writing to the stream fails
 	 */
 	public static void write(NSObject root, File file, Format format)
-		throws PropertyListException, ParserConfigurationException, IOException
+		throws PropertyListException, IOException
 	{
 		write(root, new FileOutputStream(file), format);
 	}
