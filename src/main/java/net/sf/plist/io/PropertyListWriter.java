@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.plist.NSObject;
+import net.sf.plist.io.bin.BinaryWriter;
 import net.sf.plist.io.domxml.DOMXMLWriter;
 
 /**
@@ -44,6 +45,9 @@ public abstract class PropertyListWriter {
 		/** Represents the binary property list format */
 		BIN
 		}
+	
+	/** The format used when {@link #write(NSObject, File)} is called */
+	public static Format defaultFormat = Format.XML;
 	
 	/** The root object of the tree */
 	final protected NSObject root;
@@ -90,7 +94,7 @@ public abstract class PropertyListWriter {
 	public static void write(NSObject root, File file)
 		throws PropertyListException, ParserConfigurationException, IOException
 	{
-		write(root, file, Format.XML);
+		write(root, file, defaultFormat);
 	}
 	/**
 	 * Convert a tree to a property list and write it to a file 
