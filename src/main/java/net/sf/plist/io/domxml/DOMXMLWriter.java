@@ -61,6 +61,8 @@ public class DOMXMLWriter extends PropertyListWriter {
 	public final static String DOCTYPE_PUBLIC = "-//Apple//DTD PLIST 1.0//EN";
 	/** The URL of the document type */
 	public final static String DOCTYPE_SYSTEM = "http://www.apple.com/DTDs/PropertyList-1.0.dtd";
+	/** Version of this XML format */
+	public static final String VERSION = "1.0";
 	
 	/** @see PropertyListWriter#PropertyListWriter(NSObject) */
 	public DOMXMLWriter(NSObject root) throws ParserConfigurationException {
@@ -73,7 +75,6 @@ public class DOMXMLWriter extends PropertyListWriter {
 	@Override
 	public void write(OutputStream stream) throws DOMException, PropertyListException, IOException {
 		write(stream,true);
-		stream.close();
 	}
 	/**
 	 * Convert a tree to a XML property list and write it to a stream
@@ -81,9 +82,11 @@ public class DOMXMLWriter extends PropertyListWriter {
 	 * @param indent whether the resulting XML file should be indented
 	 * @throws DOMException when an error occurred generating the XML document
 	 * @throws PropertyListException when generating the property list fails
+	 * @throws IOException if an I/O error occurs
 	 */
-	public void write(OutputStream stream, boolean indent) throws DOMException, PropertyListException {
+	public void write(OutputStream stream, boolean indent) throws DOMException, PropertyListException, IOException {
 		Element rootNode = doc.createElement("plist");
+		rootNode.setAttribute("version", VERSION);
 		rootNode.appendChild(generateNode(root));
 
 		doc.appendChild(rootNode);
@@ -106,6 +109,7 @@ public class DOMXMLWriter extends PropertyListWriter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		stream.close();
 	}
 	
 	/**
