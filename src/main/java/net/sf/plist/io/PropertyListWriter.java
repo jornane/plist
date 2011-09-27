@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import net.sf.plist.NSObject;
+import net.sf.plist.io.bin.BinaryWriter;
 import net.sf.plist.io.domxml.DOMXMLWriter;
 
 /**
@@ -78,7 +79,7 @@ public abstract class PropertyListWriter {
 		throws PropertyListException, IOException
 	{
 		switch(format) {
-			case BIN:throw new UnsupportedOperationException("Binary property list format is not supported yet.");
+			case BIN:new BinaryWriter(root).write(stream);break;
 			case XML:new DOMXMLWriter(root).write(stream);break;
 			case TXT:throw new UnsupportedOperationException("Text property list format is not supported yet.");
 			default:throw new NullPointerException("format");
