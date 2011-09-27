@@ -2,8 +2,36 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.plist</groupId>
-	<artifactId>PropertyList</artifactId>
-	<version>SNAPSHOT</version>
+	<artifactId>property-list</artifactId>
+	<name>Property List Library</name>
+	<version>svn-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<description>
+		Read/write property list library written in Java with support for reading/writing XML and binary property list files.
+		Property lists are key/value datastores for serialized objects, mainly used in Mac OS X.
+	</description>
+	<url>http://plist.sf.net</url>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License 3.0</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<issueManagement>
+		<system>SourceForge</system>
+		<url>https://sourceforge.net/p/plist/tickets/</url>
+	</issueManagement>
+	<scm>
+		<connection>svn://svn.code.sf.net/p/plist/code</connection>
+		<url>https://sourceforge.net/p/plist/code</url>
+	</scm>
+	<developers>
+		<developer>
+			<name>Yørn de Jong</name>
+			<email>byorn@users.sf.net</email>
+		</developer>
+	</developers>
 	<build>
 		<plugins>
 			<plugin>
@@ -20,15 +48,14 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.2</version>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-			</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.8</version>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
 		</plugins>
 	</build>
 </project>
