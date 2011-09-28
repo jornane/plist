@@ -122,12 +122,9 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 				System.arraycopy(offsetBytes, i*offsetEntrySize, offsetTableEntry, 0, offsetEntrySize);
 				offsetTable[i] = getInteger(offsetTableEntry);
 			}
-		} catch (IOException ioe) {
-			try {
-				if (this.stream != null)
-					this.stream.close();
-			} catch (IOException ioe2) {/*do nothing, it went wrong earlier*/}
-			throw ioe;
+		} finally {
+			if (this.stream != null)
+				this.stream.close();
 		}
 	}
 	

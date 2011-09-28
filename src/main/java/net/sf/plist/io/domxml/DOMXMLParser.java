@@ -100,6 +100,8 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 			doc = file==null ? db.parse(input) : db.parse(file);
 		} catch (SAXException e) {
 			throw new PropertyListException("The property list is not a valid XML document.", e);
+		} finally {
+			input.close();
 		}
 	}
 	
