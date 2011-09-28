@@ -21,7 +21,6 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist.io.bin;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -93,8 +92,8 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	}
 	
 	/** @see PropertyListParser#PropertyListParser(File) */
-	public BinaryParser(File file) throws PropertyListException, FileNotFoundException {
-		super(file);
+	public BinaryParser(File file) throws PropertyListException, IOException {
+		super(file, null);
 	}
 	
 	/**/// {@inheritDoc PropertyListParser#PropertyListParser(File)} */

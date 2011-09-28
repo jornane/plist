@@ -45,6 +45,7 @@ public abstract class PropertyListParser {
 	 * @param file the file to parse
 	 * @throws FileNotFoundException when the file does not exist
 	 */
+	@Deprecated
 	public PropertyListParser(File file) throws FileNotFoundException {
 		this(file, new FileInputStream(file));
 	}
