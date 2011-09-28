@@ -117,8 +117,9 @@ public class DOMXMLWriter extends PropertyListWriter {
 		} catch (TransformerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			stream.close();
 		}
-		stream.close();
 	}
 	
 	/**
