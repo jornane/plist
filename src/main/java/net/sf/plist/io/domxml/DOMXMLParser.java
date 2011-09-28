@@ -59,6 +59,10 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 	final static protected DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	/** The DocumentBuilder */
 	final protected DocumentBuilder db;
+	/** The parse result */
+	protected NSObject result;
+	/** The exception indicating why parsing failed */
+	protected PropertyListException pleResult;
 	
 	/** DTD obtained from http://www.apple.com/DTDs/PropertyList-1.0.dtd, with comments removed */
 	public static final String DTD = "<!ENTITY % plistObject \"(array | data | date | dict | real | integer | string | true | false )\" >"
@@ -113,20 +117,26 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 	/** {@inheritDoc} */
 	@Override
 	public NSObject parse() throws PropertyListException {
-		final Element root = doc.getDocumentElement();
-		final NodeList children = root.getChildNodes();
-		Node childNode = null;
-		for(int i=0;i<children.getLength();i++) {
-			if (children.item(i).getNodeType() == Node.TEXT_NODE) {
-				if (children.item(i).getTextContent().trim().length() > 0)
-					throw new PropertyListException("Unexpected text content in root PList node.");
-			} else {
-				if (childNode != null)
-					throw new PropertyListException("The property list appears to contain more than one root NSObject.");
-				childNode = children.item(i);
+		if (result != null) return result;
+		try {
+			if (pleResult != null) throw pleResult;
+			final Element root = doc.getDocumentElement();
+			final NodeList children = root.getChildNodes();
+			Node childNode = null;
+			for(int i=0;i<children.getLength();i++) {
+				if (children.item(i).getNodeType() == Node.TEXT_NODE) {
+					if (children.item(i).getTextContent().trim().length() > 0)
+						throw new PropertyListException("Unexpected text content in root PList node.");
+				} else {
+					if (childNode != null)
+						throw new PropertyListException("The property list appears to contain more than one root NSObject.");
+					childNode = children.item(i);
+				}
 			}
+			return result = parseNode(childNode);
+		} catch (PropertyListException ple) {
+			throw pleResult = ple; // store the exception so it can be re-thrown when parse is called again
 		}
-		return parseNode(childNode);
 	}
 	
 	/**

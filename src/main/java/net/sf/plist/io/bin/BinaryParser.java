@@ -21,6 +21,7 @@ This file was obtained from http://plist.sf.net/
 package net.sf.plist.io.bin;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -45,20 +46,24 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	
 	// The stream is private to keep the possibility open for a custom seekable object
 	/** The stream */
-	final private RandomAccessFile stream;
+	private RandomAccessFile stream;
 	
 	/** Size of offset entries in bytes */
-	final protected byte offsetEntrySize;
+	protected byte offsetEntrySize;
 	/** Size of object references in bytes */
-	final protected byte objRefSize;
+	protected byte objRefSize;
 	/** Number of objects in stream */
-	final protected int numObjects;
+	protected int numObjects;
 	/** Starting address of the root object */
-	final protected long rootAddr;
+	protected long rootAddr;
 	/** Starting address of the offset table */
-	final protected long offsetTableOffset;
+	protected long offsetTableOffset;
 	/** The offset table */
-	final protected int[] offsetTable;
+	protected int[] offsetTable;
+	/** The parse result */
+	protected NSObject result;
+	/** The exception indicating why parsing failed */
+	protected PropertyListException pleResult;
 	
 	/**
 	 * Convert an array of bytes to a long
@@ -88,12 +93,29 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	}
 	
 	/** @see PropertyListParser#PropertyListParser(File) */
-	public BinaryParser(File file) throws IOException, PropertyListException {
+	public BinaryParser(File file) throws PropertyListException, FileNotFoundException {
 		super(file);
-		byte[] magicStartTest = new byte[8];
-		byte[] magicEndTest = new byte[6];
-		byte[] metaData = new byte[26];
+	}
+	
+	/**/// {@inheritDoc PropertyListParser#PropertyListParser(File)} */
+	/** 
+	 * Not supported yet.
+	 * @throws UnsupportedOperationException because this is not supported yet
+	 */
+	public BinaryParser(InputStream input) {
+		super(input);
+		throw new UnsupportedOperationException("The BinaryParser doesn't support parsing from InputStream yet.");
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public synchronized NSObject parse() throws PropertyListException {
+		if (result != null) return result;
 		try {
+			if (pleResult != null) throw pleResult;
+			byte[] magicStartTest = new byte[8];
+			byte[] magicEndTest = new byte[6];
+			byte[] metaData = new byte[26];
 			// Check if the stream contains a binary property list
 			stream = new RandomAccessFile(file, "r");
 			stream.read(magicStartTest);
@@ -122,32 +144,14 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 				System.arraycopy(offsetBytes, i*offsetEntrySize, offsetTableEntry, 0, offsetEntrySize);
 				offsetTable[i] = getInteger(offsetTableEntry);
 			}
-		} catch (IOException ioe) {
-			try {
-				if (this.stream != null)
-					this.stream.close();
-			} catch (IOException ioe2) {/*do nothing, it went wrong earlier*/}
-			throw ioe;
-		}
-	}
-	
-	/**/// {@inheritDoc PropertyListParser#PropertyListParser(File)} */
-	/** 
-	 * Not supported yet.
-	 * @throws UnsupportedOperationException because this is not supported yet
-	 */
-	public BinaryParser(InputStream input) {
-		super(input);
-		throw new UnsupportedOperationException("The BinaryParser doesn't support parsing from InputStream yet.");
-	}
-	
-	/** {@inheritDoc} */
-	@Override
-	public synchronized NSObject parse() throws PropertyListException {
-		try {
-			return parseNode(rootAddr);
+			return result = parseNode(rootAddr);
 		} catch (IOException e) {
-			throw new PropertyListException("Unable to parse binary property list", e);
+			throw pleResult = new PropertyListException("Unable to parse binary property list", e);
+		} catch (PropertyListException ple) {
+			throw pleResult = ple; // store the exception so it can be re-thrown when parse is called again
+		} finally {
+			if (this.stream != null)
+				try {this.stream.close();} catch (IOException e) {/*do nothing*/}
 		}
 	}
 	
