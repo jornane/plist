@@ -1,11 +1,11 @@
 /*
-Abstract Property List Writer - LGPL licensed
-Copyright (C) 2011  Yørn de Jong
+Abstract Property List Writer - LGPL 3.0 licensed
+Copyright (C) 2012  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+version 3.0 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-This file was obtained from http://plist.sf.net/
+File is part of the Property List project.
+Project page on https://plist.sf.net/
 */
 package net.sf.plist.io;
 
@@ -44,8 +45,15 @@ public abstract class PropertyListWriter {
 		BIN
 		}
 	
-	/** The format used when {@link #write(NSObject, File)} is called */
-	public static Format defaultFormat = Format.XML;
+	/**
+	 * The default format used when {@link #write(NSObject, File)} is called.
+	 * This usually is {@link Format#BIN} on Mac OS X or {@link Format#XML} on other operating systems,
+	 * but might differ since this field is <b>not</b> final.
+	 * If you need a specific format you should <b>not</b> rely on the contents of this field to stay the same.
+	 * Instead you should specify the format as an argument in the {@link #write(NSObject, File, Format)} method.
+	 * If you do not need a specific format then it is safe to use the {@link #write(OutputStream)} method without {@link Format} argument.  
+	 */
+	public static Format defaultFormat = System.getProperty("os.name").toLowerCase().contains("mac") ? Format.BIN : Format.XML;
 	
 	/** The root object of the tree */
 	final protected NSObject root;

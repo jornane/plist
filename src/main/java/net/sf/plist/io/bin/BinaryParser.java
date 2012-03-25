@@ -1,11 +1,11 @@
 /*
-Property List Binary Parser - LGPL licensed
-Copyright (C) 2011  Yørn de Jong
+Property List Binary Parser - LGPL 3.0 licensed
+Copyright (C) 2012  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+version 3.0 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-This file was obtained from http://plist.sf.net/
+File is part of the Property List project.
+Project page on https://plist.sf.net/
 */
 package net.sf.plist.io.bin;
 
@@ -27,7 +28,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 import net.sf.plist.*;
 import net.sf.plist.io.PropertyListException;
@@ -324,7 +325,7 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	protected NSDictionary parseDictionary(byte length) throws IOException, PropertyListException {
 		int length2 = getLength(length);
 		byte[] buffer = new byte[2*length2*objRefSize];
-		HashMap<String,NSObject> result = new HashMap<String,NSObject>(length2);
+		TreeMap<String,NSObject> result = new TreeMap<String,NSObject>();
 		stream.read(buffer);
 		for(int i=0;i<length2;i++) {
 			byte[] keyRefArr = new byte[objRefSize];

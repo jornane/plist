@@ -1,11 +1,11 @@
 /*
-Property List Binary Writer - LGPL licensed
-Copyright (C) 2011  Yørn de Jong
+Property List Binary Writer - LGPL 3.0 licensed
+Copyright (C) 2012  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+version 3.0 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-This file was obtained from http://plist.sf.net/
+File is part of the Property List project.
+Project page on https://plist.sf.net/
 */
 package net.sf.plist.io.bin;
 
@@ -40,11 +41,10 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	protected final List<NSObject> objectIndex = new ArrayList<NSObject>();
 	
 	/** Bytes expected at the start of the file */
-	static final protected byte[] STARTMAGIC = "bplist00".getBytes();
+	protected final static byte[] STARTMAGIC = "bplist00".getBytes();
 	
 	/** Pattern used to determine whether a string contains only ASCII characters */
-	//public static final Pattern ASCIIPATTERN = Pattern.compile("[A-Za-z0-9 !\"#$%&'()*+,-./:;<=>?@\\[\\\\\\]^_`{|}~]*");
-	public static final Pattern ASCIIPATTERN = Pattern.compile("[\\p{ASCII}]*");
+	public final static Pattern ASCIIPATTERN = Pattern.compile("[\\p{ASCII}]*");
 	
 	/** Size of offset entries in bytes */
 	protected byte offsetEntrySize;
@@ -96,7 +96,6 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	/**
 	 * Calculate the 2log of a long, rounded up to the nearest integer or minimal result
 	 * @param l the long
-	 * @param min minimal result
 	 * @return the 2log
 	 */
 	public static byte log2ceil(long l) {

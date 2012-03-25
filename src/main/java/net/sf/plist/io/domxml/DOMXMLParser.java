@@ -1,11 +1,11 @@
 /*
-Property List DOM XML Parser - LGPL licensed
-Copyright (C) 2011  Yørn de Jong
+Property List DOM XML Parser - LGPL 3.0 licensed
+Copyright (C) 2012  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+version 3.0 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-This file was obtained from http://plist.sf.net/
+File is part of the Property List project.
+Project page on https://plist.sf.net/
 */
 package net.sf.plist.io.domxml;
 
@@ -28,7 +29,7 @@ import java.io.InputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -192,7 +193,7 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 	 */
 	protected static NSDictionary parseDictionary(Node node) throws PropertyListException {
 		final NodeList children = node.getChildNodes();
-		final HashMap<String,NSObject> result = new HashMap<String,NSObject>();
+		final TreeMap<String,NSObject> result = new TreeMap<String,NSObject>();
 		String key = null;
 		for(int i=0;i<children.getLength();i++) {
 			if (children.item(i).getNodeType() == Node.TEXT_NODE) {
