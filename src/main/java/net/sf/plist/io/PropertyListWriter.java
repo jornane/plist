@@ -17,7 +17,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 File is part of the Property List project.
-Project page on https://plist.sf.net/
+Project page on http://plist.sf.net/
 */
 package net.sf.plist.io;
 
