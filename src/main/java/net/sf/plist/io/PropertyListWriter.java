@@ -37,23 +37,23 @@ public abstract class PropertyListWriter {
 
 	/** Consists of possible output formats */
 	public enum Format {
-		/** Represents the ASCII property list format */
-		TXT,
+		/** Represents the JSON property list format */
+		JSON,
 		/** Represents the XML property list format */
 		XML,
 		/** Represents the binary property list format */
-		BIN
+		BINARY
 		}
 	
 	/**
 	 * The default format used when {@link #write(NSObject, File)} is called.
-	 * This usually is {@link Format#BIN} on Mac OS X or {@link Format#XML} on other operating systems,
+	 * This usually is {@link Format#BINARY} on Mac OS X or {@link Format#XML} on other operating systems,
 	 * but might differ since this field is <b>not</b> final.
 	 * If you need a specific format you should <b>not</b> rely on the contents of this field to stay the same.
 	 * Instead you should specify the format as an argument in the {@link #write(NSObject, File, Format)} method.
 	 * If you do not need a specific format then it is safe to use the {@link #write(OutputStream)} method without {@link Format} argument.  
 	 */
-	public static Format defaultFormat = System.getProperty("os.name").toLowerCase().contains("mac") ? Format.BIN : Format.XML;
+	public static Format defaultFormat = System.getProperty("os.name").toLowerCase().contains("mac") ? Format.BINARY : Format.XML;
 	
 	/** The root object of the tree */
 	final protected NSObject root;
@@ -87,9 +87,9 @@ public abstract class PropertyListWriter {
 		throws PropertyListException, IOException
 	{
 		switch(format) {
-			case BIN:new BinaryWriter(root).write(stream);break;
+			case BINARY:new BinaryWriter(root).write(stream);break;
 			case XML:new DOMXMLWriter(root).write(stream);break;
-			case TXT:throw new UnsupportedOperationException("Text property list format is not supported yet.");
+			case JSON:throw new UnsupportedOperationException("JSON property list format is not supported yet.");
 			default:throw new NullPointerException("format");
 		}
 	}
