@@ -104,7 +104,7 @@ public abstract class PropertyListParser {
 		try {
 			input.mark(Integer.MAX_VALUE);
 			return new BinaryParser(input).parse();
-		} catch (PropertyListException e) {
+		} catch (Exception e) {
 			input.reset();
 			input.mark(Integer.MAX_VALUE);
 			return new DOMXMLParser(input).parse();
