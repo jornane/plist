@@ -24,6 +24,8 @@ package net.sf.plist;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * <p>Ordered list of {@link NSObject}s.</p>
@@ -53,12 +55,13 @@ public final class NSArray extends NSObject {
 	/**
 	 * Get an unlinked modifiable {@link List} containing all values of this object.
 	 * This {@link List} can be modified and then used to create a new {@link NSArray}.
-	 * Each subsequent call to {@link #list()} will create a new {@link ArrayList}.
+	 * Each subsequent call to {@link #toList()} will create a new {@link ArrayList}.
 	 * Use {@link #getValue()} to get an unmodifiable {@link List}.
 	 * @return the {@link List}
 	 * @see #getValue()
 	 */
-	public List<NSObject> list() {
+	@Override
+	public List<NSObject> toList() {
 		return new ArrayList<NSObject>(theList);
 	}
 	/**
@@ -66,7 +69,7 @@ public final class NSArray extends NSObject {
 	 * Changes made in the array will not affect this object.</p>
 	 * 
 	 * <p>When iterating through all items in this object,
-	 * the {@link #list()} method is a better choice for performance reasons.</p> 
+	 * the {@link #toList()} method is a better choice for performance reasons.</p> 
 	 * @return the array
 	 */
 	public NSObject[] array() {
@@ -74,11 +77,47 @@ public final class NSArray extends NSObject {
 	}
 	/**
 	 * {@inheritDoc}
-	 * @see #list()
+	 * @see #toList()
 	 */
 	@Override
 	public List<NSObject> getValue() {
 		return theList;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean isTrue() {
+		return !theList.isEmpty();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toBytes() {
+		return new byte[0];
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public SortedMap<String, NSObject> toMap() {
+		int i = 1;
+		TreeMap<String, NSObject> result = new TreeMap<String, NSObject>();
+		for(NSObject o : theList) {
+			result.put("item "+i, o);
+			i++;
+		}
+		return result;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public long toLong() {
+		return theList.size();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public double toDouble() {
+		return theList.size();
 	}
 
 }

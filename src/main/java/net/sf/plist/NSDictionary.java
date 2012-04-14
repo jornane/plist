@@ -23,6 +23,8 @@ package net.sf.plist;
 
 import java.util.Collections;
 import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -53,7 +55,7 @@ public final class NSDictionary extends NSObject {
 	 * @see java.util.Map#get(Object)
 	 */
 	public NSObject get(String key) {
-		return map().get(key);
+		return toMap().get(key);
 	}
 	/**
 	 * Get the entryset for this {@link NSObject}.
@@ -61,12 +63,12 @@ public final class NSDictionary extends NSObject {
 	 * @see java.util.Map#entrySet()
 	 */
 	public Set<Entry<String, NSObject>> entrySet() {
-		return map().entrySet();
+		return toMap().entrySet();
 	}
 	
 	/**
 	 * {@inheritDoc}
-	 * @see #map()
+	 * @see #toMap()
 	 */
 	@Override
 	public SortedMap<String,NSObject> getValue() {
@@ -75,13 +77,44 @@ public final class NSDictionary extends NSObject {
 	/**
 	 * Get an unlinked modifiable {@link SortedMap} containing all values of this object.
 	 * This {@link SortedMap} can be modified and then used to create a new {@link NSDictionary}.
-	 * Each subsequent call to {@link #map()} will create a new {@link SortedMap}.
+	 * Each subsequent call to {@link #toMap()} will create a new {@link SortedMap}.
 	 * Use {@link #getValue()} to get an unmodifiable {@link SortedMap}.
 	 * @return the {@link SortedMap}
 	 * @see #getValue()
 	 */
-	public SortedMap<String, NSObject> map() {
+	@Override
+	public SortedMap<String, NSObject> toMap() {
 		return new TreeMap<String, NSObject>(theDictionary);
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public List<NSObject> toList() {
+		return new ArrayList<NSObject>(theDictionary.values());
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean isTrue() {
+		return !theDictionary.isEmpty();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toBytes() {
+		return new byte[0];
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public long toLong() {
+		return theDictionary.size();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public double toDouble() {
+		return theDictionary.size();
 	}
 
 }

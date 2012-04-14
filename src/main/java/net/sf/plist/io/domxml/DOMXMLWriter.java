@@ -157,7 +157,7 @@ public class DOMXMLWriter extends PropertyListWriter {
 	 */
 	protected Element generateArray(NSArray array) throws DOMException, PropertyListException {
 		Element root = doc.createElement("array");
-		for(NSObject obj : array.list())
+		for(NSObject obj : array.toList())
 			root.appendChild(generateNode(obj));
 		return root;
 	}

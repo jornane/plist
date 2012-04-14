@@ -32,17 +32,18 @@ public abstract class NSNumber extends NSObject {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see #number()
+	 * @see #toNumber()
 	 */
 	@Override
 	public Number getValue() {
-		return number();
+		return toNumber();
 	}
 	/**
 	 * Get the contents of this object as a {@link Number}.
 	 * @return the {@link Number}
 	 */
-	public abstract Number number();
+	@Override
+	public abstract Number toNumber();
 
 	/**
 	 * Construct a {@link NSInteger} or {@link NSReal}.
@@ -56,6 +57,12 @@ public abstract class NSNumber extends NSObject {
 			|| number instanceof Short)
 			return new NSInteger(number.longValue());
 		return new NSReal(number.doubleValue());
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public final boolean isTrue() {
+		return toNumber().longValue() != 0;
 	}
 	
 }

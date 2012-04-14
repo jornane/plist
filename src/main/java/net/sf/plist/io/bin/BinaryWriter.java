@@ -192,15 +192,15 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeArray(NSArray obj) throws IOException {
-		long len = writeObjectHeader(obj.list().size(), ARRAY);
-		byte[] buffer = new byte[obj.list().size()*objRefSize];
+		long len = writeObjectHeader(obj.toList().size(), ARRAY);
+		byte[] buffer = new byte[obj.toList().size()*objRefSize];
 		int i=0;
-		for(NSObject o : obj.list()) {
+		for(NSObject o : obj.toList()) {
 			System.arraycopy(longToByteArray(objectIndex.indexOf(o), objRefSize), 0, buffer, i*objRefSize, objRefSize);
 			i++;
 		}
 		stream.write(buffer);
-		return len+obj.list().size()*objRefSize;
+		return len+obj.toList().size()*objRefSize;
 	}
 	
 	/**
@@ -221,9 +221,9 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeData(NSData obj) throws IOException {
-		long len = writeObjectHeader(obj.data().length, DATA);
-		len += obj.data().length;
-		stream.write(obj.data());
+		long len = writeObjectHeader(obj.toBytes().length, DATA);
+		len += obj.toBytes().length;
+		stream.write(obj.toBytes());
 		return len;
 	}
 	
@@ -234,7 +234,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeDate(NSDate obj) throws IOException {
-		long l = Double.doubleToLongBits((double)(obj.date().getTime()-EPOCH)/1000D);
+		long l = Double.doubleToLongBits((double)(obj.toDate().getTime()-EPOCH)/1000D);
 		stream.write(new byte[]{
 				(byte) (3 | (DATE << 4)) // 3 is 2log(8)
 			});
@@ -249,9 +249,9 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeDictionary(NSDictionary obj) throws IOException {
-		long len = writeObjectHeader(obj.map().size(), DICT);
-		byte[] keyBuffer = new byte[obj.map().size()*objRefSize];
-		byte[] objBuffer = new byte[obj.map().size()*objRefSize];
+		long len = writeObjectHeader(obj.toMap().size(), DICT);
+		byte[] keyBuffer = new byte[obj.toMap().size()*objRefSize];
+		byte[] objBuffer = new byte[obj.toMap().size()*objRefSize];
 		int i=0;
 		for(Entry<String,NSObject> e : obj.entrySet()) {
 			int keyIndex = objectIndex.indexOf(new NSString(e.getKey()));
@@ -262,7 +262,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 		}
 		stream.write(keyBuffer);
 		stream.write(objBuffer);
-		return len+2*obj.map().size()*objRefSize;
+		return len+2*obj.toMap().size()*objRefSize;
 	}
 	
 	/**
@@ -272,12 +272,12 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeInteger(NSInteger obj) throws IOException {
-		byte lengthByte = log2ceil(getLongLength(obj.getLong()));
+		byte lengthByte = log2ceil(getLongLength(obj.toLong()));
 		byte longLen = (byte) (1<<lengthByte);
 		stream.write(new byte[]{
 				(byte) (lengthByte | (INT << 4))
 			});
-		stream.write(longToByteArray(obj.getLong(), longLen));
+		stream.write(longToByteArray(obj.toLong(), longLen));
 		return longLen+1;
 	}
 	
@@ -288,7 +288,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeReal(NSReal obj) throws IOException {
-		long l = Double.doubleToLongBits(obj.getDouble());
+		long l = Double.doubleToLongBits(obj.toDouble());
 		byte lengthByte = log2ceil(getLongLength(l));
 		byte longLen = (byte) (1<<lengthByte);
 		stream.write(new byte[]{
@@ -322,10 +322,10 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 			if (!objectIndex.contains(obj)) {
 				objectIndex.add(obj);
 				if (obj instanceof NSDictionary) {
-					buildObjectIndex(((NSDictionary) obj).map().keySet().toArray(new String[0]));
-					buildObjectIndex(((NSDictionary) obj).map().values().toArray(new NSObject[0]));
+					buildObjectIndex(((NSDictionary) obj).toMap().keySet().toArray(new String[0]));
+					buildObjectIndex(((NSDictionary) obj).toMap().values().toArray(new NSObject[0]));
 				} else if (obj instanceof NSArray) {
-					buildObjectIndex(((NSArray) obj).list().toArray(new NSObject[0]));
+					buildObjectIndex(((NSArray) obj).toList().toArray(new NSObject[0]));
 				}
 			}
 		}

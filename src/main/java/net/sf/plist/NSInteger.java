@@ -41,23 +41,31 @@ public final class NSInteger extends NSNumber {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see #number()
+	 * @see #toNumber()
 	 */
 	@Override
 	public Long getValue() {
-		return number();
+		return toNumber();
 	}
 	/**
 	 * Get the contents of this object as a <code>long</code>.
 	 * @return the long
 	 */
-	public long getLong() {
+	@Override
+	public long toLong() {
 		return theLong;
 	}
+	
 	/** {@inheritDoc} */
 	@Override
-	public Long number() {
+	public Long toNumber() {
 		return new Long(theLong);
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public double toDouble() {
+		return new Double(theLong).doubleValue();
 	}
 
 }

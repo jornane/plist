@@ -55,17 +55,19 @@ public final class NSDate extends NSObject {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see #date()
+	 * @see #toDate()
 	 */
 	@Override
 	public Date getValue() {
-		return date();
+		return toDate();
 	}
 	/**
 	 * Get the {@link Date} represented by this object.
 	 * @return the {@link Date}
 	 */
-	public Date date() {
+	@Override
+	public Date toDate() {
+		// Don't return theDate because Date is mutable
 		return new Date(time());
 	}
 	/**
@@ -73,6 +75,24 @@ public final class NSDate extends NSObject {
 	 */
 	public long time() {
 		return theDate.getTime();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean isTrue() {
+		return true;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public long toLong() {
+		return theDate.getTime();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public double toDouble() {
+		return Double.longBitsToDouble(toLong());
 	}
 
 }

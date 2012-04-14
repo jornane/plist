@@ -21,6 +21,12 @@ Project page on http://plist.sf.net/
 */
 package net.sf.plist;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 /**
  * <p>Every Property List contains one or more {@link NSObject}s.</p>
  * <p>Every different extension holds a certain kind of value,
@@ -79,5 +85,103 @@ public abstract class NSObject {
 		Object val = getValue();
 		return val == null ? "null" : val.toString();
 	}
+	
+	/**
+	 * Try to retrieve the list contained in this {@link NSObject}.
+	 * This method will return the list if the object is a {@link NSArray}
+	 * and will return a list containing all the values (but without the keys)
+	 * if this object is a {@link NSDictionary}. Otherwise an <b>empty</b> list is returned.
+	 * @return	the list
+	 */
+	public List<NSObject> toList() {
+		return new ArrayList<NSObject>();
+	}
+	
+	/**
+	 * Return whether or not the value evaluates to true
+	 * A value returns to true if
+	 * * it is the {@link Boolean} type {@link Boolean#TRUE}
+	 * * It is a string with a length greater than zero which doesn't equal "NO" or "False" (case insensitive)
+	 * * It is a number greater than 0
+	 * * It is a collection which contains more than zero elements
+	 * * It is a date
+	 * * It is binary data with a length greater than 0
+	 * @return	the value evaluates to true
+	 */
+	public abstract boolean isTrue();
+	/** @see #isTrue() */
+	public final Boolean toBoolean() {
+		return Boolean.valueOf(isTrue());
+	}
+	
+	/**
+	 * Get the raw data of the value.
+	 * @return	the data
+	 */
+	public byte[] toBytes() {
+		long l = toLong();
+		byte[] result = new byte[8];
+		for(byte i=8;i>0;i--) {
+			result[i-1] = (byte)l;
+			l >>= 8;
+		}
+		return result;
+	}
+	
+	/**
+	 * Get the value as a date.
+	 * This will only work if this object is a {@link NSDate},
+	 * otherwise the current date is returned.
+	 * @return	the date or current date
+	 */
+	public Date toDate() {
+		return new Date();
+	}
+	
+	/**
+	 * Try to retrieve the {@link SortedMap} contained in this {@link NSObject}.
+	 * This method will return the {@link SortedMap} if the object is a {@link NSDictionary}
+	 * and will return a {@link SortedMap} containing incremental keys and all the values
+	 * if this object is a {@link NSArray}. Otherwise an <b>empty</b> list is returned.
+	 * @return	the list
+	 */
+	public SortedMap<String, NSObject> toMap() {
+		return new TreeMap<String,NSObject>();
+	}
+	
+	/**
+	 * Return the value as a number.
+	 * If this is not a {@link NSNumber}
+	 * we will try to derive a number from the value.
+	 * @return	the number
+	 */
+	public Number toNumber() {
+		return new Long(toLong());
+	}
+	
+	/**
+	 * Return the value as a long.
+	 * If this is not a {@link NSInteger}
+	 * we will try to derive a long from the value.
+	 * @return	the long
+	 */
+	public abstract long toLong();
+	
+	/**
+	 * Return the value as an int.
+	 * This value is found by cutting bytes off from {@link #toLong()}.
+	 * @return	the int
+	 */
+	public final int toInteger() {
+		return (int) toLong();
+	}
+	
+	/**
+	 * Return the value as a double.
+	 * If this is not a {@link NSReal}
+	 * we will try to derive a double from the value.
+	 * @return	the double
+	 */
+	public abstract double toDouble();
 
 }

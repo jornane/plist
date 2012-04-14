@@ -21,6 +21,9 @@ Project page on http://plist.sf.net/
 */
 package net.sf.plist;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 /**
  * <p>Represents a string.</p>
  * @see String
@@ -44,6 +47,40 @@ public final class NSString extends NSObject {
 	@Override
 	public String getValue() {
 		return theString;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean isTrue() {
+		return !theString.isEmpty() && !"no".equalsIgnoreCase(theString) && !"false".equalsIgnoreCase(theString) && !"0".equalsIgnoreCase(theString);
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toBytes() {
+		return theString.getBytes();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public Number toNumber() {
+		try {
+			return NumberFormat.getInstance().parse(theString);
+		} catch (ParseException e) {
+			return new Byte((byte) 0);
+		}
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public long toLong() {
+		return toNumber().longValue();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public double toDouble() {
+		return toNumber().doubleValue();
 	}
 
 }

@@ -41,23 +41,30 @@ public final class NSReal extends NSNumber {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see #getDouble()
+	 * @see #toDouble()
 	 */
 	@Override
 	public Double getValue() {
-		return number();
+		return toNumber();
 	}
 	/**
 	 * Get the contents of this object as a <code>double</code>.
 	 * @return the double
 	 */
-	public double getDouble() {
+	@Override
+	public double toDouble() {
 		return theDouble;
 	}
 	/** {@inheritDoc} */
 	@Override
-	public Double number() {
+	public Double toNumber() {
 		return new Double(theDouble);
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public long toLong() {
+		return Double.doubleToLongBits(theDouble);
 	}
 
 }

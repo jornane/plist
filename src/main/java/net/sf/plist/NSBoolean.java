@@ -21,6 +21,9 @@ Project page on http://plist.sf.net/
 */
 package net.sf.plist;
 
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 /**
  * <p>Represents a value of either {@link Boolean#TRUE} or {@link Boolean#FALSE}.</p>
  * 
@@ -54,6 +57,7 @@ public final class NSBoolean extends NSObject {
 		return bool() ? Boolean.TRUE : Boolean.FALSE;
 	}
 	/** @see net.sf.plist.NSBoolean#bool() */
+	@Override
 	public boolean isTrue() {
 		return bool();
 	}
@@ -63,6 +67,41 @@ public final class NSBoolean extends NSObject {
 	 */
 	public boolean bool() {
 		return theBoolean;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toBytes() {
+		return theBoolean ? new byte[]{-0x7F} : new byte[]{0x00};
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public SortedMap<String, NSObject> toMap() {
+		if (theBoolean) {
+			TreeMap<String, NSObject> result = new TreeMap<String, NSObject>();
+			result.put("true", NSBoolean.TRUE);
+			return result;
+		}
+		return new TreeMap<String, NSObject>();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public Number toNumber() {
+		return theBoolean ? new Byte((byte) 1) : new Byte((byte) 0);
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public long toLong() {
+		return theBoolean ? 1 : 0;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public double toDouble() {
+		return theBoolean ? 1 : 0;
 	}
 
 }

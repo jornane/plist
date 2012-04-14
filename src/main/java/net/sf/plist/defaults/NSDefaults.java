@@ -84,7 +84,7 @@ public class NSDefaults extends TreeMap<String,NSObject> {
 	 * Re-read all information from the Property List file
 	 */
 	synchronized public void refresh() {
-		putAll(getRoot(file).map());
+		putAll(getRoot(file).toMap());
 	}
 	
 	/**
@@ -183,6 +183,14 @@ public class NSDefaults extends TreeMap<String,NSObject> {
 	 */
 	public static void addDomain(String domain) {
 		domains.add(domain);
+	}
+	
+	/**
+	 * Get the root of this {@link NSDefaults} as {@link NSDictionary}
+	 * @return	the dictionary
+	 */
+	public NSDictionary toDictionary() {
+		return new NSDictionary(this);
 	}
 
 }

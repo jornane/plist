@@ -43,11 +43,11 @@ public final class NSData extends NSObject {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see #data()
+	 * @see #toBytes()
 	 */
 	@Override
 	public byte[] getValue() {
-		return data();
+		return toBytes();
 	}
 	/**
 	 * Get a {@link ByteArrayInputStream} which can be used to read the contents of this object.
@@ -62,10 +62,32 @@ public final class NSData extends NSObject {
 	 * it's recommended to use {@link #stream()} instead.</p>
 	 * @return the array
 	 */
-	public byte[] data() {
+	@Override
+	public byte[] toBytes() {
 		byte[] result = new byte[theData.length];
 		System.arraycopy(theData, 0, result, 0, theData.length);
 		return result;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean isTrue() {
+		return theData.length > 0;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public long toLong() {
+		long l = 0;
+		for(int it=0;it<theData.length;it++)
+			l |= (theData[it]&0xFFL) << (8L*(theData.length-it-1L));
+		return l;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public double toDouble() {
+		return Double.longBitsToDouble(toLong());
 	}
 
 }
