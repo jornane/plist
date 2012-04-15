@@ -77,6 +77,7 @@ public class NSDefaults extends TreeMap<String,NSObject> {
 	 * @throws IOException	writing the file failed
 	 */
 	synchronized public void commit() throws PropertyListException, IOException {
+		file.getParentFile().mkdirs();
 		PropertyListWriter.write(new NSDictionary(this), file);
 	}
 	
