@@ -24,6 +24,7 @@ package net.sf.plist.defaults;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +61,7 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	private final static HashSet<String> domains = new HashSet<String>();
 	
 	/** Collection of all instances, grouped by {@link Scope} and domain */
-	private final static HashMap<Scope, HashMap<String,NSDefaults>> INSTANCES = new HashMap<Scope,HashMap<String,NSDefaults>>();
+	private final static Map<Scope, HashMap<String, NSDefaults>> INSTANCES;
 	
 	/** Instance of {@link OperatingSystemPath} for current operating system */
 	public final static OperatingSystemPath OSPATH = OperatingSystemPath.getInstance();
@@ -81,8 +82,10 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	
 	/** Initialize INSTANCES with all {@link Scope}s */
 	static {
+		HashMap<Scope, HashMap<String, NSDefaults>> instances = new HashMap<Scope,HashMap<String,NSDefaults>>();
 		for(Scope s : Scope.values())
-			INSTANCES.put(s, new HashMap<String,NSDefaults>());
+			instances.put(s, new HashMap<String,NSDefaults>());
+		INSTANCES = Collections.unmodifiableMap(instances);
 	}
 	
 	/**
