@@ -59,6 +59,8 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	
 	/** Collection of domains */
 	private final static HashSet<String> domains = new HashSet<String>();
+	/** Whether or not the domains available on the system are already read */
+	private static boolean domainsInitialized = false;
 	
 	/** Collection of all instances, grouped by {@link Scope} and domain */
 	private final static Map<Scope, HashMap<String, NSDefaults>> INSTANCES;
@@ -80,7 +82,10 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	/** {@link NSDefaults} is lazy loaded. This variable stays true until the property list file is read for the first time. This happens when a value is read or when a commit is done. It does not happen when a value is written or {@link #clear()} is called. */
 	private boolean virgin;
 	
-	/** Initialize INSTANCES with all {@link Scope}s */
+	/**
+	 * Initialize INSTANCES with all {@link Scope}s
+	 * 
+	 */
 	static {
 		HashMap<Scope, HashMap<String, NSDefaults>> instances = new HashMap<Scope,HashMap<String,NSDefaults>>();
 		for(Scope s : Scope.values())
@@ -98,6 +103,13 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	public NSDefaults(File file) {
 		this.file = file;
 		virgin = true;
+	}
+	
+	private static void initDomains() {
+		for(Scope s : Scope.values())
+			for(String domain : OSPATH.getPListPath(s).list(OSPATH.getFilter(s)))
+				domains.add(domain.substring(0, domain.length()-6-(s.isByHost()?OSPATH.getMachineUUID().length()+1:0)));
+		domainsInitialized = true;
 	}
 	
 	/**
@@ -205,6 +217,10 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 * @return	the domain
 	 */
 	public static String getDomainForName(String canonicalName) {
+		if (domainsInitialized) synchronized(domains) {
+			if (domainsInitialized)
+				initDomains();
+		}
 		if (canonicalName.toLowerCase().startsWith("java.") || canonicalName.toLowerCase().startsWith("javax."))
 			throw new IllegalArgumentException("Can not instantiate NSDefaults for a built-in Java object.");
 		for(String s : domains) {
@@ -226,6 +242,20 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 */
 	public static void addDomain(String domain) {
 		domains.add(domain);
+	}
+	
+	/**
+	 * Return an array of all domains known to {@link NSDefaults}
+	 * This includes both domains added through {@link #addDomain(String)}
+	 * as well as domains already in used on the local computer
+	 * @return	array containing all known domains
+	 */
+	public static String[] getDomains() {
+		if (domainsInitialized) synchronized(domains) {
+			if (domainsInitialized)
+				initDomains();
+		}
+		return domains.toArray(new String[0]);
 	}
 	
 	/**

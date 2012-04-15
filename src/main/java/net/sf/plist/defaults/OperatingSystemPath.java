@@ -23,6 +23,7 @@ package net.sf.plist.defaults;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -72,7 +73,7 @@ abstract class OperatingSystemPath {
 		}
 
 		@Override
-		public String getMachineUUID() {
+		public String buildMachineUUID() {
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(
 						Runtime.getRuntime().exec("system_profiler SPHardwareDataType")
@@ -83,9 +84,9 @@ abstract class OperatingSystemPath {
 						return line.trim().substring("Hardware UUID: ".length());
 					line = reader.readLine();
 				}
-				return super.getMachineUUID();
+				return super.buildMachineUUID();
 			} catch (Exception e) {
-				return super.getMachineUUID();
+				return super.buildMachineUUID();
 			}
 		}
 
@@ -99,14 +100,14 @@ abstract class OperatingSystemPath {
 	 */
 	static class LinuxSystemPath extends DefaultSystemPath {
 		@Override
-		public String getMachineUUID() {
+		public String buildMachineUUID() {
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(
 						Runtime.getRuntime().exec("hal-get-property --udi /org/freedesktop/Hal/devices/computer --key system.hardware.uuid")
 						.getInputStream()));
 				return reader.readLine();
 			} catch (Exception e) {
-				return super.getMachineUUID();
+				return super.buildMachineUUID();
 			}
 		}
 	}
@@ -125,6 +126,9 @@ abstract class OperatingSystemPath {
 			return new LinuxSystemPath();
 		return new DefaultSystemPath();
 	}
+	
+	/** The cached uuid value */
+	private String uuid;
 
 	/**
 	 * Get the Property List file for a given domain and scope
@@ -137,7 +141,7 @@ abstract class OperatingSystemPath {
 		if (domain == null)
 			domain = isLowerCasePreferred() ? ".globalpreferences" : ".GlobalPreferences";
 		if (scope.isByHost())
-			return new File(getPListPath(scope)+File.separator+domain+"."+getMachineUUID()+".plist");
+			return new File(getPListPath(scope)+File.separator+domain+"."+buildMachineUUID()+".plist");
 		return new File(getPListPath(scope)+File.separator+domain+".plist");
 	}
 	
@@ -156,7 +160,19 @@ abstract class OperatingSystemPath {
 	 * 
 	 * @return	the UUID
 	 */
-	public String getMachineUUID() {
+	public final String getMachineUUID() {
+		if (uuid == null) synchronized(this) {
+			if (uuid == null)
+				uuid = buildMachineUUID();
+		}
+		return uuid;
+	}
+	/**
+	 * Overrideable method for extending classes to determine the machine UUID
+	 * of the local machine. This value can be requested publicly using {@link #getMachineUUID()}
+	 * @return	the UUID
+	 */
+	protected String buildMachineUUID() {
 		StringBuilder result = new StringBuilder();
 		try {
 			// Basic UUID determination using MAC address,
@@ -176,6 +192,22 @@ abstract class OperatingSystemPath {
 				+ System.getProperty("os.version")
 				+ System.getProperty("os.arch");
 		}
+	}
+	
+	/**
+	 * Generate a {@link FilenameFilter} to be used to find
+	 * Property List files representing a domain.
+	 * @param scope	The scope of the Property List files intended to be found, should correspond with the path being searched.
+	 * @return	The {@link FilenameFilter}
+	 */
+	FilenameFilter getFilter(final Scope scope) {
+		return new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				if (scope.isByHost())
+					return name != null && name.length() > 7+getMachineUUID().length() && name.substring(name.length()-7-getMachineUUID().length()).equalsIgnoreCase("."+getMachineUUID()+".plist");
+				else
+					return name != null && name.length() > 6 && name.substring(name.length()-6).equalsIgnoreCase(".plist");
+			}};
 	}
 
 }
