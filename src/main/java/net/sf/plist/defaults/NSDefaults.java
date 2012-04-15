@@ -178,6 +178,8 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 * @return	the instance
 	 */
 	public synchronized static final NSDefaults getInstance(String domain, Scope scope) {
+		if (domain == null || domain.length() == 0)
+			return getGlobalInstance(scope);
 		HashMap<String, NSDefaults> instances = INSTANCES.get(scope);
 		if (instances == null)
 			throw new IllegalArgumentException("Unknown scope");
@@ -195,7 +197,7 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 * @param scope	the scope
 	 * @return	the instance
 	 */
-	static final NSDefaults getInstance(Class<?> baseClass, Scope scope) {
+	public static final NSDefaults getInstance(Class<?> baseClass, Scope scope) {
 		return getInstance(getDomainForName(baseClass.getCanonicalName()), scope);
 	}
 	
@@ -206,7 +208,7 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 * @param scope	the scope
 	 * @return	the instance
 	 */
-	static final NSDefaults getInstance(Object baseObject, Scope scope) {
+	public static final NSDefaults getInstance(Object baseObject, Scope scope) {
 		return getInstance(baseObject.getClass(), scope);
 	}
 	

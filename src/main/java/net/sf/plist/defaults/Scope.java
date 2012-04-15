@@ -28,7 +28,7 @@ package net.sf.plist.defaults;
  * A special {@link Scope} is {@link #USER_BYHOST} which is specific for
  * the current user but only on the host the program is currently running on.
  */
-enum Scope {
+public enum Scope {
 	
 	SYSTEM(false),
 	USER(false),
