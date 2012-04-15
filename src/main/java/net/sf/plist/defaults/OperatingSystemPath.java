@@ -163,7 +163,7 @@ abstract class OperatingSystemPath {
 			// when determining using more modern methods fail
 			// or are not available
 			for(byte b : NetworkInterface.getNetworkInterfaces().nextElement().getHardwareAddress()) {
-				result.append(Integer.toString(b&0xFF, 0xF));
+				result.append(Integer.toString(b&0xFF, 0x10));
 			}
 			return result.toString();
 		} catch (SocketException e) {
