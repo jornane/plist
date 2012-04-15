@@ -72,9 +72,9 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	/** Map containing all key/value pairs */
 	private final TreeMap<String,NSObject> theMap = new TreeMap<String,NSObject>();
 	/** Map containing all modifications since last commit, or since initialization if not committed yet */
-	private final Map<String,NSObject> modifications = new HashMap<String,NSObject>();
+	private final HashMap<String,NSObject> modifications = new HashMap<String,NSObject>();
 	/** Set containing all names of keys that have been removed since last commit, or since initialization if not committed yet */
-	private final Set<String> removals = new HashSet<String>();
+	private final HashSet<String> removals = new HashSet<String>();
 	/** True if {@link #clear()} has been called since last commit, or since initialization if not committed yet */
 	private boolean cleared = false;
 	/** {@link NSDefaults} is lazy loaded. This variable stays true until the property list file is read for the first time. This happens when a value is read or when a commit is done. It does not happen when a value is written or {@link #clear()} is called. */
