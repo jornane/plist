@@ -23,7 +23,13 @@ package net.sf.plist.defaults;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import net.sf.plist.NSDictionary;
@@ -48,8 +54,7 @@ import net.sf.plist.io.PropertyListWriter;
  * which will cause the domain to be "learned".<br>
  * If the beginning of a package name matches a learned domain, the learned domain is used.  
  */
-public class NSDefaults extends TreeMap<String,NSObject> {
-	private static final long serialVersionUID = 1L;
+public class NSDefaults implements SortedMap<String,NSObject> {
 	
 	/** Collection of domains */
 	private final static HashSet<String> domains = new HashSet<String>();
@@ -60,6 +65,12 @@ public class NSDefaults extends TreeMap<String,NSObject> {
 	/** The Property List file used for reading and storing the preferences in this defaults instance */
 	protected final File file;
 	
+	protected final TreeMap<String,NSObject> theMap = new TreeMap<String,NSObject>();
+	protected final Map<String,NSObject> modifications = new HashMap<String,NSObject>();
+	protected final Set<String> removals = new HashSet<String>();
+	protected boolean cleared = false;
+	protected boolean virgin;
+	
 	/**
 	 * Construct using a fixed file.
 	 * Invocation of this constructor is discouraged,
@@ -69,6 +80,7 @@ public class NSDefaults extends TreeMap<String,NSObject> {
 	 */
 	public NSDefaults(File file) {
 		this.file = file;
+		virgin = true;
 	}
 	
 	/**
@@ -78,14 +90,29 @@ public class NSDefaults extends TreeMap<String,NSObject> {
 	 */
 	synchronized public void commit() throws PropertyListException, IOException {
 		file.getParentFile().mkdirs();
-		PropertyListWriter.write(new NSDictionary(this), file);
+		synchronized(theMap) { synchronized(modifications) { synchronized(removals) {
+			if (virgin) refresh();
+			PropertyListWriter.write(new NSDictionary(this), file);
+			modifications.clear();
+			removals.clear();
+			cleared = false;
+		}}}
 	}
 	
 	/**
 	 * Re-read all information from the Property List file
 	 */
 	synchronized public void refresh() {
-		putAll(getRoot(file).toMap());
+		synchronized(theMap) { synchronized(modifications) { synchronized(removals) {
+			virgin = false;
+			theMap.clear();
+			if (!cleared) {
+				theMap.putAll(getRoot(file).toMap());
+				for(String key : removals)
+					theMap.remove(key);
+			}
+			theMap.putAll(modifications);
+		}}}
 	}
 	
 	/**
@@ -163,7 +190,7 @@ public class NSDefaults extends TreeMap<String,NSObject> {
 	 * @return	the domain
 	 */
 	public static String getDomainForName(String canonicalName) {
-		if (canonicalName.toLowerCase().startsWith("java."))
+		if (canonicalName.toLowerCase().startsWith("java.") || canonicalName.toLowerCase().startsWith("javax."))
 			throw new IllegalArgumentException("Can not instantiate NSDefaults for a built-in Java object.");
 		for(String s : domains) {
 			if (canonicalName.equalsIgnoreCase(s) || (canonicalName.toLowerCase()+".").startsWith(s.toLowerCase()))
@@ -191,7 +218,177 @@ public class NSDefaults extends TreeMap<String,NSObject> {
 	 * @return	the dictionary
 	 */
 	public NSDictionary toDictionary() {
-		return new NSDictionary(this);
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return new NSDictionary(theMap);
+		}
+	}
+	
+	  //////////////////////////////////
+	 // Composition of TreeMap below //
+	//////////////////////////////////
+	
+	/** {@inheritDoc} */
+	public int size() {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.size();
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public boolean isEmpty() {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.isEmpty();
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public boolean containsKey(Object key) {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.containsKey(key);
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public boolean containsValue(Object value) {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.containsValue(value);
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public NSObject get(Object key) {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.get(key);
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public NSObject put(String key, NSObject value) {
+		synchronized(removals) {
+			removals.remove(key);
+			synchronized(modifications) {
+				modifications.put(key, value);
+				synchronized(theMap) {
+					return theMap.put(key, value);
+				}
+			}
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public NSObject remove(Object key) {
+		if (key instanceof String) synchronized(removals) {
+			removals.add(key.toString());
+			synchronized(modifications) {
+				modifications.remove(key);
+				synchronized(theMap) {
+					return theMap.remove(key);
+				}
+			}
+		}
+		return null;
+	}
+	
+	/** {@inheritDoc} */
+	public void putAll(Map<? extends String, ? extends NSObject> m) {
+		synchronized(removals) {
+			removals.removeAll(m.keySet());
+			synchronized(modifications) {
+				modifications.putAll(m);
+				synchronized(theMap) {
+					theMap.putAll(m);
+				}
+			}
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public void clear() {
+		synchronized(removals) {
+			synchronized(theMap) {
+				removals.clear();
+				cleared = true;
+				synchronized(modifications) {
+					modifications.clear();
+					theMap.clear();
+				}
+			}
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public Comparator<? super String> comparator() {
+		return theMap.comparator();
+	}
+	
+	/** {@inheritDoc} */
+	public SortedMap<String, NSObject> subMap(String fromKey, String toKey) {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.subMap(fromKey, toKey);
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public SortedMap<String, NSObject> headMap(String toKey) {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.headMap(toKey);
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public SortedMap<String, NSObject> tailMap(String fromKey) {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.headMap(fromKey);
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public String firstKey() {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.firstKey();
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public String lastKey() {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.lastKey();
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public Set<String> keySet() {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.keySet();
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public Collection<NSObject> values() {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.values();
+		}
+	}
+	
+	/** {@inheritDoc} */
+	public Set<java.util.Map.Entry<String, NSObject>> entrySet() {
+		synchronized(theMap) {
+			if (virgin) refresh();
+			return theMap.entrySet();
+		}
 	}
 
 }
