@@ -54,10 +54,13 @@ import net.sf.plist.io.PropertyListWriter;
  * which will cause the domain to be "learned".<br>
  * If the beginning of a package name matches a learned domain, the learned domain is used.  
  */
-public class NSDefaults implements SortedMap<String,NSObject> {
+public final class NSDefaults implements SortedMap<String,NSObject> {
 	
 	/** Collection of domains */
 	private final static HashSet<String> domains = new HashSet<String>();
+	
+	/** Collection of all instances, grouped by {@link Scope} and domain */
+	protected final static HashMap<Scope, HashMap<String,NSDefaults>> INSTANCES = new HashMap<Scope,HashMap<String,NSDefaults>>();
 	
 	/** Instance of {@link OperatingSystemPath} for current operating system */
 	public final static OperatingSystemPath OSPATH = OperatingSystemPath.getInstance();
@@ -75,6 +78,12 @@ public class NSDefaults implements SortedMap<String,NSObject> {
 	protected boolean cleared = false;
 	/** {@link NSDefaults} is lazy loaded. This variable stays true until the property list file is read for the first time. This happens when a value is read or when a commit is done. It does not happen when a value is written or {@link #clear()} is called. */
 	protected boolean virgin;
+	
+	/** Initialize INSTANCES with all {@link Scope}s */
+	static {
+		for(Scope s : Scope.values())
+			INSTANCES.put(s, new HashMap<String,NSDefaults>());
+	}
 	
 	/**
 	 * Construct using a fixed file.
@@ -153,16 +162,14 @@ public class NSDefaults implements SortedMap<String,NSObject> {
 	 * @param scope the scope
 	 * @return	the instance
 	 */
-	synchronized static final NSDefaults getInstance(String domain, Scope scope) {
-		NSDefaults result = null;
-		switch(scope) {
-			case USER:result = NSUserDefaults.getInstance(domain);break;
-			case SYSTEM:result = NSSystemDefaults.getInstance(domain);break;
-			case USER_BYHOST:result = NSUserByHostDefaults.getInstance(domain);
-		}
-		if (result == null)
+	public synchronized static final NSDefaults getInstance(String domain, Scope scope) {
+		HashMap<String, NSDefaults> instances = INSTANCES.get(scope);
+		if (instances == null)
 			throw new IllegalArgumentException("Unknown scope");
-		result.refresh();
+		if (instances.containsValue(domain))
+			return instances.get(domain);
+		NSDefaults result = new NSDefaults(OSPATH.getPListFile(domain, scope));
+		instances.put(domain, result);
 		return result;
 	}
 	
