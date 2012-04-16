@@ -23,6 +23,8 @@ package net.sf.plist.io.domxml;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -219,7 +221,7 @@ public class DOMXMLWriter extends PropertyListWriter {
 	 */
 	protected Element generateReal(NSReal real) {
 		Element root = doc.createElement("real");
-		root.appendChild(doc.createTextNode(real.getValue().toString()));
+		root.appendChild(doc.createTextNode(NumberFormat.getInstance(Locale.ROOT).format(real.toDouble())));
 		return root;
 	}
 	

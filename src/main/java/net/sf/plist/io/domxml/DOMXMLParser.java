@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -260,7 +261,7 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 	protected static NSNumber parseNumber(Node node) throws PropertyListException {
 		final String number = node.getTextContent();
 		try {
-			return NSNumber.createInstance(NumberFormat.getNumberInstance().parse(number));
+			return NSNumber.createInstance(NumberFormat.getNumberInstance(Locale.ROOT).parse(number));
 		} catch (ParseException pe) {
 			throw new PropertyListException("Expected number but got "+number, pe);
 		}
