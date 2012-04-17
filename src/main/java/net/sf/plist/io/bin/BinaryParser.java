@@ -24,7 +24,6 @@ package net.sf.plist.io.bin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -46,7 +45,7 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	
 	// The stream is private to keep the possibility open for a custom seekable object
 	/** The stream */
-	private RandomAccessFile stream;
+	private Seekable stream;
 	
 	/** Size of offset entries in bytes */
 	protected byte offsetEntrySize;
@@ -95,16 +94,15 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	/** @see PropertyListParser#PropertyListParser(File) */
 	public BinaryParser(File file) throws PropertyListException, IOException {
 		super(file, null);
+		if (file == null)
+			throw new NullPointerException("file");
 	}
 	
-	/**/// {@inheritDoc PropertyListParser#PropertyListParser(File)} */
-	/** 
-	 * Not supported yet.
-	 * @throws UnsupportedOperationException because this is not supported yet
-	 */
+	/** @see PropertyListParser#PropertyListParser(InputStream) */
 	public BinaryParser(InputStream input) {
 		super(input);
-		throw new UnsupportedOperationException("The BinaryParser doesn't support parsing from InputStream yet.");
+		if (input == null)
+			throw new NullPointerException("input");
 	}
 	
 	/** {@inheritDoc} */
@@ -117,7 +115,12 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 			byte[] magicEndTest = new byte[6];
 			byte[] metaData = new byte[26];
 			// Check if the stream contains a binary property list
-			stream = new RandomAccessFile(file, "r");
+			if (file != null)
+				stream = new SeekableFile(file, "r");
+			else if (input != null)
+				stream = new SeekableInputStream(input);
+			else
+				throw new NullPointerException("Both file and input are null, this should never happen. Please report it on http://plist.sf.net .");
 			stream.read(magicStartTest);
 			if (!Arrays.equals(STARTMAGIC, magicStartTest))
 				throw new PropertyListException("File is not a binary property list.");
@@ -149,9 +152,6 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 			throw pleResult = new PropertyListException("Unable to parse binary property list", e);
 		} catch (PropertyListException ple) {
 			throw pleResult = ple; // store the exception so it can be re-thrown when parse is called again
-		} finally {
-			if (this.stream != null)
-				try {this.stream.close();} catch (IOException e) {/*do nothing*/}
 		}
 	}
 	

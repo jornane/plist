@@ -23,7 +23,6 @@ package net.sf.plist.io.domxml;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
@@ -83,7 +82,7 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 	                               	
 	/** @see PropertyListParser#PropertyListParser(File) */
 	public DOMXMLParser(File file) throws IOException, PropertyListException {
-		this(file, new FileInputStream(file));
+		this(file, null);
 	}
 	/** @see PropertyListParser#PropertyListParser(InputStream) */
 	public DOMXMLParser(InputStream input) throws IOException, PropertyListException {
@@ -106,8 +105,6 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 			doc = file==null ? db.parse(input) : db.parse(file);
 		} catch (SAXException e) {
 			throw new PropertyListException("The property list is not a valid XML document.", e);
-		} finally {
-			input.close();
 		}
 	}
 	
