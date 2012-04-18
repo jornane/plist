@@ -22,6 +22,7 @@ Project page on http://plist.sf.net/
 package net.sf.plist;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +43,22 @@ public final class NSDictionary extends NSObject {
 	private final SortedMap<String,NSObject> theDictionary;
 	
 	/**
-	 * Constructor .
-	 * @param theMap value of the new object
+	 * Standard constructor. Needs a {@link SortedMap} in order to keep the ordering.
+	 * @param theMap	value of the new object
 	 */
 	public NSDictionary(SortedMap<String,NSObject> theMap) {
 		this.theDictionary = Collections.unmodifiableSortedMap(theMap);
+	}
+	/**
+	 * Alternative constructor. Will sort the map by key.
+	 * A {@link TreeMap} will be constructed in order to achieve this.
+	 * @param theMap	value of the new object
+	 */
+	public NSDictionary(Map<String, NSObject> theMap) {
+		if (theMap instanceof SortedMap)
+			this.theDictionary = Collections.unmodifiableSortedMap((SortedMap<String, NSObject>) theMap);
+		else
+			this.theDictionary = Collections.unmodifiableSortedMap(new TreeMap<String, NSObject>(theMap));
 	}
 	/**
 	 * Get the {@link NSObject} associated with <code>key</code>.
