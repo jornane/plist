@@ -25,12 +25,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 
+/** Seekable file; this class is just a wrapper to make {@link RandomAccessFile} implement {@link Seekable}. */
 final class SeekableFile extends RandomAccessFile implements Seekable {
 
+	/** @see RandomAccessFile(File,String) */
 	public SeekableFile(File file, String mode) throws FileNotFoundException {
 		super(file, mode);
 	}
 
+	/** @see RandomAccessFile(String,String) */
 	public SeekableFile(String file, String mode) throws FileNotFoundException {
 		super(file, mode);
 	}

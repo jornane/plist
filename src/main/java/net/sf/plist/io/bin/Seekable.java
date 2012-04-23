@@ -31,19 +31,19 @@ interface Seekable {
 	/** @see RandomAccessFile#read(byte[]) */
 	int read(byte[] bytes) throws IOException;
 	
-	/** @see length() */
+	/** @see RandomAccessFile#length() */
 	long length() throws IOException;
 	
-	/** @see length() */
+	/** @see RandomAccessFile#seek(long) */
 	void seek(long bytes) throws IOException;
 	
-	/** @see close() */
+	/** @see RandomAccessFile#close() */
 	void close() throws IOException;
 	
-	/** @see read() */
+	/** @see RandomAccessFile#read() */
 	int read() throws IOException;
 	
-	/** @see readLong() */
+	/** @see RandomAccessFile#readLong() */
 	long readLong() throws IOException;
 
 }
