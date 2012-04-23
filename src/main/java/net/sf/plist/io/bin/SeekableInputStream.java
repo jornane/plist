@@ -48,12 +48,7 @@ final class SeekableInputStream implements Seekable {
 	public SeekableInputStream(InputStream input) throws IOException {
 		this.input = input;
 		input.mark(Integer.MAX_VALUE);
-		byte[] buff = new byte[8000];
-		int buffRead = 0;
-		int bytesRead = 0;
-		while((buffRead = input.read(buff)) != -1)
-			bytesRead += buffRead;
-		this.length = bytesRead;
+		this.length = (int) input.skip(Integer.MAX_VALUE);
 		input.reset();
 		pos = 0;
 	}
