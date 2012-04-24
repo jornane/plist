@@ -90,7 +90,7 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 		return i;
 	}
 	
-	/** @see PropertyListParser#PropertyListParser(File) */
+	/** @see PropertyListParser#parse(File) */
 	public BinaryParser(File file) throws PropertyListException, IOException {
 		super(file, null);
 		if (file == null)

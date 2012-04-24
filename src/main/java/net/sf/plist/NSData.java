@@ -61,7 +61,7 @@ public final class NSData extends NSObject {
 	/**
 	 * <p>Return the contents of this object as primitive array.<br />
 	 * Because the array is copied to keep this object immutable,
-	 * it's recommended to use {@link #stream()} instead.</p>
+	 * it's recommended to use {@link #toStream()} instead.</p>
 	 * @return the array
 	 */
 	@Override

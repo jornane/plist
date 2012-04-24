@@ -80,7 +80,7 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 	                        + "\n" + "<!ELEMENT real (#PCDATA)>"
 	                        + "\n" + "<!ELEMENT integer (#PCDATA)>";
 	                               	
-	/** @see PropertyListParser#PropertyListParser(File) */
+	/** @see PropertyListParser#parse(File) */
 	public DOMXMLParser(File file) throws IOException, PropertyListException {
 		this(file, null);
 	}
@@ -88,6 +88,7 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 	public DOMXMLParser(InputStream input) throws IOException, PropertyListException {
 		this(null, input);
 	}
+	/** @see PropertyListParser#PropertyListParser(File,InputStream) */
 	private DOMXMLParser(File file, InputStream input) throws IOException, PropertyListException {
 		super(file, input);
 		try {
