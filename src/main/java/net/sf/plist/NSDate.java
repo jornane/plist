@@ -33,6 +33,9 @@ import java.util.TimeZone;
  */
 public final class NSDate extends NSObject {
 
+	/** Epoch constant, used to calculate dates in binary Property List files */
+	static long EPOCH = 978307200000L;
+	
 	/**
 	 * Get the format used for dates in Property List files
 	 * @return the date format
@@ -54,6 +57,14 @@ public final class NSDate extends NSObject {
 	}
 	
 	/**
+	 * Constructor for {@link Double} values.
+	 * Use this constructor for values returned by the {@link #toDouble} method.
+	 */
+	public NSDate(double theDouble) {
+		this(new Date((long)(EPOCH + 1000D*theDouble)));
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 * @see #toDate()
 	 */
@@ -68,12 +79,10 @@ public final class NSDate extends NSObject {
 	@Override
 	public Date toDate() {
 		// Don't return theDate because Date is mutable
-		return new Date(time());
+		return new Date(getTime());
 	}
-	/**
-	 * @see Date#getTime()
-	 */
-	public long time() {
+	/** @see Date#getTime() */
+	public long getTime() {
 		return theDate.getTime();
 	}
 	
@@ -86,13 +95,17 @@ public final class NSDate extends NSObject {
 	/** {@inheritDoc} */
 	@Override
 	public long toLong() {
-		return theDate.getTime();
+		return getTime();
 	}
 	
-	/** {@inheritDoc} */
+	/**
+	 * Generate a double value which represents the
+	 * {@link Date} contained within the object.
+	 * This value is used by the binary Property List format. 
+	 */
 	@Override
 	public double toDouble() {
-		return Double.longBitsToDouble(toLong());
+		return (double)(getTime()-EPOCH)/1000D;
 	}
 
 }

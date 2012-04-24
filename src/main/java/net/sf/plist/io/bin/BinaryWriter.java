@@ -234,7 +234,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeDate(NSDate obj) throws IOException {
-		long l = Double.doubleToLongBits((double)(obj.toDate().getTime()-EPOCH)/1000D);
+		long l = Double.doubleToLongBits(obj.toDouble());
 		stream.write(new byte[]{
 				(byte) (3 | (DATE << 4)) // 3 is 2log(8)
 			});

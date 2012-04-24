@@ -113,12 +113,6 @@ public final class NSDictionary extends NSObject {
 	
 	/** {@inheritDoc} */
 	@Override
-	public byte[] toBytes() {
-		return new byte[0];
-	}
-	
-	/** {@inheritDoc} */
-	@Override
 	public long toLong() {
 		return theDictionary.size();
 	}

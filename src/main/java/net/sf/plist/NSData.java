@@ -43,17 +43,19 @@ public final class NSData extends NSObject {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see #toBytes()
+	 * @see #toStream()
 	 */
 	@Override
-	public byte[] getValue() {
-		return toBytes();
+	public ByteArrayInputStream getValue() {
+		return toStream();
 	}
 	/**
 	 * Get a {@link ByteArrayInputStream} which can be used to read the contents of this object.
+	 * This is the most cost-efficient way to retrieve the value contained in an {@link NSData} object.
 	 * @return the {@link ByteArrayInputStream}
 	 */
-	public ByteArrayInputStream stream() {
+	@Override
+	public ByteArrayInputStream toStream() {
 		return new ByteArrayInputStream(theData);
 	}
 	/**
@@ -75,13 +77,28 @@ public final class NSData extends NSObject {
 		return theData.length > 0;
 	}
 	
-	/** {@inheritDoc} */
+	/**
+	 * Returns an unformatted hexadecimal representation of the content.
+	 * @return	the hexadecimal string
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for(byte b : theData)
+			if (b < 0x10 && b >= 0)
+				sb.append("0"+Integer.toString(b&0xFF, 0x10));
+			else
+				sb.append(Integer.toString(b&0xFF, 0x10));
+		return sb.toString();
+	}
+	
+	/** 
+	 * Get the length of the content in bytes.
+	 * @return	the length
+	 */
 	@Override
 	public long toLong() {
-		long l = 0;
-		for(int it=0;it<theData.length;it++)
-			l |= (theData[it]&0xFFL) << (8L*(theData.length-it-1L));
-		return l;
+		return theData.length;
 	}
 	
 	/** {@inheritDoc} */

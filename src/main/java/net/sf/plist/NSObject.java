@@ -21,6 +21,7 @@ Project page on http://plist.sf.net/
 */
 package net.sf.plist;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -87,6 +88,14 @@ public abstract class NSObject {
 	}
 	
 	/**
+	 * Get a {@link ByteArrayInputStream} in which encapsulates the result of {@link #toBytes()}.
+	 * @return the {@link ByteArrayInputStream}
+	 */
+	public ByteArrayInputStream toStream() {
+		return new ByteArrayInputStream(toBytes());
+	}
+	
+	/**
 	 * Try to retrieve the list contained in this {@link NSObject}.
 	 * This method will return the list if the object is a {@link NSArray}
 	 * and will return a list containing all the values (but without the keys)
@@ -119,13 +128,7 @@ public abstract class NSObject {
 	 * @return	the data
 	 */
 	public byte[] toBytes() {
-		long l = toLong();
-		byte[] result = new byte[8];
-		for(byte i=8;i>0;i--) {
-			result[i-1] = (byte)l;
-			l >>= 8;
-		}
-		return result;
+		return new byte[0];
 	}
 	
 	/**

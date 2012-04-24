@@ -182,7 +182,7 @@ public class DOMXMLWriter extends PropertyListWriter {
 	 */
 	protected Element generateData(NSData data) {
 		Element root = doc.createElement("data");
-		root.appendChild(doc.createTextNode(Base64.encodeToString(data.getValue(), true)));
+		root.appendChild(doc.createTextNode(Base64.encodeToString(data.toBytes(), true)));
 		return root;
 	}
 	

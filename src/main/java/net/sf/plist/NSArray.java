@@ -92,12 +92,6 @@ public final class NSArray extends NSObject {
 	
 	/** {@inheritDoc} */
 	@Override
-	public byte[] toBytes() {
-		return new byte[0];
-	}
-	
-	/** {@inheritDoc} */
-	@Override
 	public SortedMap<String, NSObject> toMap() {
 		int i = 1;
 		TreeMap<String, NSObject> result = new TreeMap<String, NSObject>();

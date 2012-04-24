@@ -67,8 +67,5 @@ interface BinaryFields {
 	static Charset ASCIICHARSET = Charset.forName("US-ASCII");
 	/** Charset to parse unicode strings */
 	static Charset UNICODECHARSET = Charset.forName("UTF-16BE");
-	
-	/** Epoch constant, used to calculate dates */
-	static long EPOCH = 978307200000L;
 
 }

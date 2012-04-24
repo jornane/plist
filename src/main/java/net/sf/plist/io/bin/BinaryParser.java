@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.TreeMap;
 
 import net.sf.plist.*;
@@ -224,7 +223,8 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	 * @throws PropertyListException when parsing fails
 	 */
 	protected NSDate parseDate(byte length) throws IOException {
-		return new NSDate(new Date((long)(EPOCH + 1000*Double.longBitsToDouble(stream.readLong()))));
+		assert length == 8;
+		return new NSDate(Double.longBitsToDouble(stream.readLong()));
 	}
 	
 	/**
