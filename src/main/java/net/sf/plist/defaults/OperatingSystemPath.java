@@ -37,6 +37,7 @@ abstract class OperatingSystemPath {
 	 * Class for generic (probably *NIX) operating system
 	 */
 	static class DefaultSystemPath extends OperatingSystemPath {
+		/** {@inheritDoc} */
 		@Override
 		public File getPListPath(final Scope scope) {
 			switch(scope) {
@@ -49,7 +50,8 @@ abstract class OperatingSystemPath {
 			}
 			throw new NullPointerException();
 		}
-
+		
+		/** {@inheritDoc} */
 		@Override
 		public boolean isLowerCasePreferred() {
 			return true;
@@ -59,6 +61,7 @@ abstract class OperatingSystemPath {
 	 * Class for the Mac operating system
 	 */
 	static class OSXSystemPath extends OperatingSystemPath {
+		/** {@inheritDoc} */
 		@Override
 		public File getPListPath(final Scope scope) {
 			switch(scope) {
@@ -71,7 +74,8 @@ abstract class OperatingSystemPath {
 			}
 			throw new NullPointerException();
 		}
-
+		
+		/** {@inheritDoc} */
 		@Override
 		public String buildMachineUUID() {
 			try {
@@ -90,6 +94,7 @@ abstract class OperatingSystemPath {
 			}
 		}
 
+		/** {@inheritDoc} */
 		@Override
 		public boolean isLowerCasePreferred() {
 			return false;
@@ -99,6 +104,7 @@ abstract class OperatingSystemPath {
 	 * Class for the Linux operating system
 	 */
 	static class LinuxSystemPath extends DefaultSystemPath {
+		/** {@inheritDoc} */
 		@Override
 		public String buildMachineUUID() {
 			try {
@@ -109,6 +115,31 @@ abstract class OperatingSystemPath {
 			} catch (Exception e) {
 				return super.buildMachineUUID();
 			}
+		}
+	}
+	
+	/**
+	 * Class for the Windows operating system
+	 */
+	static class WindowsSystemPath extends OperatingSystemPath {
+		/** {@inheritDoc} */
+		@Override
+		public File getPListPath(Scope scope) {
+			switch(scope) {
+			case USER:
+				return new File(System.getProperty("user.home")+"\\AppData\\Roaming\\Library\\Preferences\\");
+			case USER_BYHOST:
+				return new File(System.getProperty("user.home")+"\\AppData\\Roaming\\Library\\Preferences\\ByHost\\");
+			case SYSTEM:
+				return new File("C:\\Users\\Public\\AppData\\Local\\Library\\Preferences\\");
+			}
+			throw new NullPointerException();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		public boolean isLowerCasePreferred() {
+			return false;
 		}
 	}
 	
@@ -124,6 +155,8 @@ abstract class OperatingSystemPath {
 			return new OSXSystemPath();
 		if (System.getProperty("os.name").toLowerCase().contains("linux"))
 			return new LinuxSystemPath();
+		if (System.getProperty("os.name").toLowerCase().contains("windows"))
+			return new WindowsSystemPath();
 		return new DefaultSystemPath();
 	}
 	
@@ -141,10 +174,20 @@ abstract class OperatingSystemPath {
 		if (domain == null)
 			domain = isLowerCasePreferred() ? ".globalpreferences" : ".GlobalPreferences";
 		if (scope.isByHost())
-			return new File(getPListPath(scope)+File.separator+domain+"."+buildMachineUUID()+".plist");
+			if (isLowerCasePreferred())
+				return new File((getPListPath(scope)+File.separator+domain+"."+buildMachineUUID()+".plist").toLowerCase());
+			else
+				return new File(getPListPath(scope)+File.separator+domain+"."+buildMachineUUID()+".plist");
 		return new File(getPListPath(scope)+File.separator+domain+".plist");
 	}
 	
+	/**
+	 * Determines if the operating system prefers lowercase domains.
+	 * This is generally true for operating systems that run on
+	 * filesystems which are case sensitive,
+	 * usually being everything other than Windows and Mac OS X.
+	 * @return	whether lower case is preferred
+	 */
 	public abstract boolean isLowerCasePreferred();
 
 	/**
