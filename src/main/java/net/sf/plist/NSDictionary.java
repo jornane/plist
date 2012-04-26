@@ -38,7 +38,7 @@ import java.util.TreeMap;
  * <p>In this implementation, a {@link SortedMap} is used to represent the {@link NSDictionary}.</p>
  * @see SortedMap
  */
-public final class NSDictionary extends NSObject {
+public final class NSDictionary extends NSCollection {
 
 	private final SortedMap<String,NSObject> theDictionary;
 	

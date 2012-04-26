@@ -33,7 +33,7 @@ import java.util.TreeMap;
  * <p>In this implementation, a {@link List} is used to represent the {@link NSArray}.</p>
  * @see List
  */
-public final class NSArray extends NSObject {
+public final class NSArray extends NSCollection {
 
 	private final List<NSObject> theList;
 	
