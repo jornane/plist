@@ -64,7 +64,7 @@ public final class NSReal extends NSNumber {
 	/** {@inheritDoc} */
 	@Override
 	public long toLong() {
-		return Double.doubleToLongBits(theDouble);
+		return Math.round(theDouble);
 	}
 
 }
