@@ -83,12 +83,17 @@ public final class NSData extends NSObject {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for(byte b : theData)
+		StringBuilder sb = new StringBuilder("<");
+		byte count = 0;
+		for(byte b : theData) {
 			if (b < 0x10 && b >= 0)
-				sb.append("0"+Integer.toString(b&0xFF, 0x10));
-			else
-				sb.append(Integer.toString(b&0xFF, 0x10));
+				sb.append('0');
+			sb.append(Integer.toString(b&0xFF, 0x10));
+			count++;
+			if ((count & 0x3) == 0) // Slightly faster; no count=0 assignment required
+				sb.append(' ');
+		}
+		sb.append('>');
 		return sb.toString();
 	}
 	
