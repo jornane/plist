@@ -103,5 +103,11 @@ public final class NSBoolean extends NSObject {
 	public double toDouble() {
 		return theBoolean ? 1 : 0;
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return theBoolean ? "1" : "0";
+	}
 
 }
