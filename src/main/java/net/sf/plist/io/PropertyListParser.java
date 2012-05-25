@@ -95,8 +95,6 @@ public abstract class PropertyListParser {
 	 * @throws IOException when reading the input failed
 	 */
 	public static NSObject parse(InputStream input) throws PropertyListException, IOException {
-		if (input == null)
-			throw new NullPointerException("input");
 		if (!input.markSupported())
 			return parse(new BufferedInputStream(input));
 		try {
