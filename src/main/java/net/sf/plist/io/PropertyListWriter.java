@@ -36,7 +36,7 @@ import net.sf.plist.io.domxml.DOMXMLWriter;
 public abstract class PropertyListWriter {
 
 	/** Consists of possible output formats */
-	public enum Format {
+	public static enum Format {
 		/** Represents the JSON property list format */
 		JSON,
 		/** Represents the XML property list format */
