@@ -127,11 +127,11 @@ abstract class OperatingSystemPath {
 		public File getPListPath(Scope scope) {
 			switch(scope) {
 			case USER:
-				return new File(System.getProperty("user.home")+"\\AppData\\Roaming\\Library\\Preferences\\");
+				return new File(System.getenv("USERPROFILE")+"\\AppData\\Roaming\\Library\\Preferences\\");
 			case USER_BYHOST:
-				return new File(System.getProperty("user.home")+"\\AppData\\Roaming\\Library\\Preferences\\ByHost\\");
+				return new File(System.getenv("USERPROFILE")+"\\AppData\\Roaming\\Library\\Preferences\\ByHost\\");
 			case SYSTEM:
-				return new File("C:\\Users\\Public\\AppData\\Local\\Library\\Preferences\\");
+				return new File(System.getenv("PUBLIC")+"\\AppData\\Local\\Library\\Preferences\\");
 			}
 			throw new NullPointerException();
 		}
@@ -141,11 +141,23 @@ abstract class OperatingSystemPath {
 		public boolean isLowerCasePreferred() {
 			return false;
 		}
+		
+		/** {@inheritDoc} */
+		@Override
+		public String buildMachineUUID() {
+			try {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(
+						Runtime.getRuntime().exec("reg query \"HKLM\\SYSTEM\\ControlSet001\\Control\\IDConfigDB\\Hardware Profiles\\0001\" /v HwProfileGuid")
+						.getInputStream()));
+				reader.readLine();
+				reader.readLine();
+				String line = reader.readLine();
+				return line.substring(line.indexOf('{'));
+			} catch (Exception e) {
+				return super.buildMachineUUID();
+			}
+		}
 	}
-	
-	// UUID Linux: hal-get-property --udi /org/freedesktop/Hal/devices/computer --key system.hardware.uuid
-	// UUID OS X: system_profiler SPHardwareDataType | awk '/UUID/{sub(/^[ \t]+/, "")}; NR == 17 {print}'
-	// UUID Windows: reg query "HKLM\SYSTEM\ControlSet001\Control\IDConfigDB\Hardware Profiles\0001" /v HwProfileGuid
 	
 	/**
 	 * Get the instance for the current operating system
