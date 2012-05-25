@@ -127,9 +127,9 @@ abstract class OperatingSystemPath {
 		public File getPListPath(Scope scope) {
 			switch(scope) {
 			case USER:
-				return new File(System.getenv("USERPROFILE")+"\\AppData\\Roaming\\Library\\Preferences\\");
+				return new File(System.getenv("APPDATA")+"\\Roaming\\Library\\Preferences\\");
 			case USER_BYHOST:
-				return new File(System.getenv("USERPROFILE")+"\\AppData\\Roaming\\Library\\Preferences\\ByHost\\");
+				return new File(System.getenv("APPDATA")+"\\Roaming\\Library\\Preferences\\ByHost\\");
 			case SYSTEM:
 				return new File(System.getenv("PUBLIC")+"\\AppData\\Local\\Library\\Preferences\\");
 			}
