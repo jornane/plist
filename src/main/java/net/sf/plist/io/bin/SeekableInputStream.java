@@ -26,10 +26,10 @@ import java.io.InputStream;
 
 /**
  * InputStream in which seeking is possible.
- * This provides more flexibility than just using
+ * This is a wrapper around {@link InputStream} using
  * {@link InputStream#mark(int)} and {@link InputStream#reset()}
  */
-final class SeekableInputStream implements Seekable {
+final class SeekableInputStream extends InputStream implements Seekable {
 
 	/** The data source */
 	private final InputStream input;
@@ -37,6 +37,8 @@ final class SeekableInputStream implements Seekable {
 	private final int length;
 	/** Current position in the data source */
 	private int pos;
+	/** Mark position */
+	private int mark;
 	
 	/**
 	 * Construct new instance, this will make a mark at the current position of input.
@@ -46,6 +48,8 @@ final class SeekableInputStream implements Seekable {
 	 * @throws IOException	if consuming input fails
 	 */
 	public SeekableInputStream(InputStream input) throws IOException {
+		if (!input.markSupported())
+	        throw new IOException("mark/reset not supported");
 		this.input = input;
 		input.mark(Integer.MAX_VALUE);
 		this.length = (int) input.skip(Integer.MAX_VALUE);
@@ -54,11 +58,28 @@ final class SeekableInputStream implements Seekable {
 	}
 	
 	/** {@inheritDoc} */
-	public int read(byte[] bytes) throws IOException {
-		pos += bytes.length;
-		return input.read(bytes);
+	@Override
+	public int read() throws IOException {
+		pos++;
+		return input.read();
 	}
 	
+	/** {@inheritDoc} */
+	@Override
+	public int read(byte[] bytes) throws IOException {
+		int incr = input.read(bytes);
+		pos += incr;
+		return incr;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+    public int read(byte b[], int off, int len) throws IOException {
+		int incr = input.read(b, off, len);
+		pos += incr;
+		return incr;
+    }
+    
 	/** {@inheritDoc} */
 	public long length() throws IOException {
 		return length;
@@ -71,6 +92,44 @@ final class SeekableInputStream implements Seekable {
 		seek((int)pos);
 	}
 	
+	/** {@inheritDoc} */
+	@Override
+	public long skip(long n) throws IOException {
+		long incr = input.skip(n);
+		pos += incr;
+		return incr;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int available() {
+		return length-pos;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public void close() throws IOException {
+		input.close();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+    public synchronized void mark(int readlimit) {
+    	mark = pos;
+    }
+    
+	/** {@inheritDoc} */
+	@Override
+    public synchronized void reset() throws IOException {
+    	seek(mark);
+    }
+	
+	/** {@inheritDoc} */
+	@Override
+    public boolean markSupported() {
+        return true;
+    }
+    
 	/** @see #seek(long) */
 	public void seek(int pos) throws IOException {
 		if (pos < 0)
@@ -82,17 +141,6 @@ final class SeekableInputStream implements Seekable {
 			input.skip(pos - this.pos);
 		}
 		this.pos = pos;
-	}
-	
-	/** {@inheritDoc} */
-	public void close() throws IOException {
-		input.close();
-	}
-	
-	/** {@inheritDoc} */
-	public int read() throws IOException {
-		pos++;
-		return input.read();
 	}
 	
 	/** {@inheritDoc} */
