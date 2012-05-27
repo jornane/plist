@@ -52,7 +52,7 @@ import util.Base64;
 /**
  * Parses XML property list files to a tree consisting of {@link NSObject}s
  */
-public final class DOMXMLParser extends PropertyListParser implements EntityResolver {
+public final class DOMXMLParser extends PropertyListParser {
 
 	/** The XML document */
 	protected Document doc;
@@ -93,7 +93,11 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 		super(file, input);
 		try {
 			db = dbf.newDocumentBuilder();
-			db.setEntityResolver(this);
+			db.setEntityResolver(new EntityResolver(){
+				public InputSource resolveEntity(String arg0, String arg1)
+						throws SAXException, IOException {
+					return new InputSource(new ByteArrayInputStream(DTD.getBytes()));
+				}});
 		} catch (ParserConfigurationException e) {
 			// This happens when the configuration of DocumentBuilderFactory is incorrect.
 			// Since we're not changing this configuration,
@@ -107,11 +111,6 @@ public final class DOMXMLParser extends PropertyListParser implements EntityReso
 		} catch (SAXException e) {
 			throw new PropertyListException("The property list is not a valid XML document.", e);
 		}
-	}
-	
-	/** {@inheritDoc} */
-	public InputSource resolveEntity(String publicId, String systemId) {
-		return new InputSource(new ByteArrayInputStream(DTD.getBytes()));
 	}
 	
 	/** {@inheritDoc} */

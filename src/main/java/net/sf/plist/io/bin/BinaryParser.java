@@ -68,7 +68,7 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	 * @param bytes the byte array (8 bytes max)
 	 * @return the long
 	 */
-	public static long getLong(byte... bytes) { // Get a long, 64 bits
+	protected static long getLong(byte... bytes) { // Get a long, 64 bits
 		// bytes.length <= 8
 		// byte&0xFFL makes it a positive long
 		long l = 0;
@@ -81,7 +81,7 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	 * @param bytes the byte array (4 bytes max)
 	 * @return the int
 	 */
-	public static int getInteger(byte... bytes) { // Get an int, 32 bits
+	protected static int getInteger(byte... bytes) { // Get an int, 32 bits
 		// bytes.length <= 4
 		// byte&0xFF makes it a positive int
 		int i = 0;

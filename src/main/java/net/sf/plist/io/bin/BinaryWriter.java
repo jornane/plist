@@ -65,7 +65,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @param l the long
 	 * @return the amount of bytes required
 	 */
-	public static byte getLongLength(long l) {
+	protected static byte getLongLength(long l) {
 		if (l == 0)
 			return 1;
 		if (l < 0)
@@ -84,7 +84,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @param size the amount of bytes to output
 	 * @return the bytes that make up the long
 	 */
-	public static byte[] longToByteArray(long l, byte size) {
+	protected static byte[] longToByteArray(long l, byte size) {
 		byte[] result = new byte[size];
 		for(byte i=size;i>0;i--) {
 			result[i-1] = (byte)l;
@@ -98,7 +98,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @param l the long
 	 * @return the 2log
 	 */
-	public static byte log2ceil(long l) {
+	protected static byte log2ceil(long l) {
 		for(byte i=0;i<63;i++)
 			if (l <= 1<<i)
 				return i;

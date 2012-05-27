@@ -57,16 +57,16 @@ public abstract class PropertyListParser {
 		this.input = input;
 	}
 	/**
-	 * Parse the property list to a tree
-	 * @return the root {@link NSObject} of the parsed property list
-	 * @throws PropertyListException when parsing the property list failed for some reason
+	 * Parse the Property List input (provided in the constructor) to a tree of {@link NSObject}s
+	 * @return the root {@link NSObject} of the parsed Property List
+	 * @throws PropertyListException when parsing the Property List failed for some reason
 	 */
 	public abstract NSObject parse() throws PropertyListException;
 	
 	/**
-	 * Parse a property list file.
+	 * Parse a Property List file.
 	 * @param file the file to parse
-	 * @return the root {@link NSObject} of the parsed property list
+	 * @return the root {@link NSObject} of the parsed Property List
 	 * @throws PropertyListException when parsing the file failed for some reason
 	 * @throws IOException when reading the file failed
 	 */
@@ -81,14 +81,12 @@ public abstract class PropertyListParser {
 	}
 
 	/**
-	 * <p>Parse a property list InputStream.</p>
-	 * <p>{@link InputStream#markSupported()} must be true.<br />
-	 * When that isn't possible, it's recommended to read the entire stream into an {@link java.io.ByteArrayInputStream}.<br />
-	 * This requirement is to make it possible to try multiple parsing methods without consuming the {@link InputStream}.<br />
-	 * If an {@link InputStream} is used which does <b>not</b> support mark,
-	 * the {@link InputStream} is packed into a {@link BufferedInputStream}, which does.</p>
-	 * <p>This method will <b>not</b> intentionally close the {@link InputStream},
-	 * you'll have to do that yourself after calling it.
+	 * <p>Parse a Property List InputStream.</p>
+	 * <p>It is recommended to use an implementation where {@link InputStream#markSupported()} returns true.<br />
+	 * {@link InputStream}s not meeting this recommendation will be wrapped inside a {@link BufferedInputStream}, which does.<br />
+	 * Mark is required to make it possible to try multiple parsing methods without consuming the {@link InputStream}.<br />
+	 * <p>Warning: This method will <b>not</b> explicitly close the {@link InputStream}.
+	 * You will have to close the stream yourself by calling {@link InputStream#close()} after {@link #parse(InputStream)}.
 	 * @param input the InputStream to parse (instance with mark support recommended)
 	 * @return the root {@link NSObject} of the parsed property list
 	 * @throws PropertyListException when parsing the input failed for some reason
