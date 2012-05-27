@@ -37,7 +37,7 @@ public abstract class PropertyListParser {
 
 	/**	The file being parsed */
 	protected final File file;
-	/**	The inputstream being parsed */
+	/**	The {@link InputStream} being parsed */
 	protected final InputStream input;
 	
 	/**
@@ -59,7 +59,7 @@ public abstract class PropertyListParser {
 	/**
 	 * Parse the Property List input (provided in the constructor) to a tree of {@link NSObject}s
 	 * @return the root {@link NSObject} of the parsed Property List
-	 * @throws PropertyListException when parsing the Property List failed for some reason
+	 * @throws PropertyListException when parsing the Property List failed
 	 */
 	public abstract NSObject parse() throws PropertyListException;
 	
@@ -67,7 +67,7 @@ public abstract class PropertyListParser {
 	 * Parse a Property List file.
 	 * @param file the file to parse
 	 * @return the root {@link NSObject} of the parsed Property List
-	 * @throws PropertyListException when parsing the file failed for some reason
+	 * @throws PropertyListException when parsing the file failed
 	 * @throws IOException when reading the file failed
 	 */
 	public static NSObject parse(File file) throws PropertyListException, IOException {
@@ -89,7 +89,7 @@ public abstract class PropertyListParser {
 	 * You will have to close the stream yourself by calling {@link InputStream#close()} after {@link #parse(InputStream)}.
 	 * @param input the InputStream to parse (instance with mark support recommended)
 	 * @return the root {@link NSObject} of the parsed property list
-	 * @throws PropertyListException when parsing the input failed for some reason
+	 * @throws PropertyListException when parsing the input failed
 	 * @throws IOException when reading the input failed
 	 */
 	public static NSObject parse(InputStream input) throws PropertyListException, IOException {
