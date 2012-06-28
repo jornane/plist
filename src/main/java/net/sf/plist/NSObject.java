@@ -156,6 +156,16 @@ public abstract class NSObject {
 	 * Return the value as a number.
 	 * If this is not a {@link NSNumber}
 	 * we will try to derive a number from the value.
+	 * 
+	 * The number is derived in the following way
+	 * For NSNumber: the actual number value
+	 * For NSCollection: the amount of children
+	 * For NSData: the length in bytes
+	 * For NSBoolean: always byte; 0 for false, 1 for true
+	 * For NSString: If the String is numeric, return the number in the string. Otherwise return 0
+	 * 
+	 * If you need to be sure about the result (e.g. you need to know if the result
+	 * is user intended or a guess) you should do instanceof checks yourself.
 	 * @return	the number
 	 */
 	public Number toNumber() {
