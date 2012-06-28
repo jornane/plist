@@ -107,14 +107,17 @@ public abstract class NSObject {
 	}
 	
 	/**
-	 * Return whether or not the value evaluates to true
-	 * A value returns to true if
-	 * * it is the {@link Boolean} type {@link Boolean#TRUE}
-	 * * It is a string with a length greater than zero which doesn't equal "NO" or "False" (case insensitive)
-	 * * It is a number greater than 0
-	 * * It is a collection which contains more than zero elements
-	 * * It is a date
-	 * * It is binary data with a length greater than 0
+	 * <p>Return whether or not the value evaluates to true.</p>
+	 *
+	 * <p>A value returns to true if and only if</p>
+	 * <ul>
+	 * <li>it is the {@link NSBoolean} type {@link NSBoolean#TRUE}</li>
+	 * <li>It is an {@link NSString} which has a length greater than zero and does not equal "NO" or "False" (case insensitive)</li>
+	 * <li>It is an {@link NSNumber} greater than 0</li>
+	 * <li>It is an {@link NSCollection} which contains more than zero elements</li>
+	 * <li>It is an {@link NSDate}</li>
+	 * <li>It is an {@link NSData} with a length greater than 0</li>
+	 * </ul>
 	 * @return	the value evaluates to true
 	 */
 	public abstract boolean isTrue();
@@ -153,19 +156,21 @@ public abstract class NSObject {
 	}
 	
 	/**
-	 * Return the value as a number.
+	 * <p>Return the value as a number.
 	 * If this is not a {@link NSNumber}
-	 * we will try to derive a number from the value.
+	 * the number is derived from the value.</p>
 	 * 
-	 * The number is derived in the following way
-	 * For NSNumber: the actual number value
-	 * For NSCollection: the amount of children
-	 * For NSData: the length in bytes
-	 * For NSBoolean: always byte; 0 for false, 1 for true
-	 * For NSString: If the String is numeric, return the number in the string. Otherwise return 0
+	 * <p>The number is derived in the following way</p>
+	 * <ul>
+	 * <li>For {@link NSNumber}: the actual number value</li>
+	 * <li>For {@link NSCollection}: the amount of children</li>
+	 * <li>For {@link NSData}: the length in bytes</li>
+	 * <li>For {@link NSBoolean}: always byte; 0 for false, 1 for true</li>
+	 * <li>For {@link NSString}: If the String is numeric, return the number in the string. Otherwise return 0</li>
+	 * </ul>
 	 * 
-	 * If you need to be sure about the result (e.g. you need to know if the result
-	 * is user intended or a guess) you should do instanceof checks yourself.
+	 * <p>If you need to be sure about the result (e.g. you need to know if the result
+	 * is user intended or a guess) you should do instanceof checks yourself.</p>
 	 * @return	the number
 	 */
 	public Number toNumber() {
@@ -175,7 +180,7 @@ public abstract class NSObject {
 	/**
 	 * Return the value as a long.
 	 * If this is not a {@link NSInteger}
-	 * we will try to derive a long from the value.
+	 * the long is derived from the value.
 	 * @return	the long
 	 */
 	public abstract long toLong();
@@ -192,7 +197,7 @@ public abstract class NSObject {
 	/**
 	 * Return the value as a double.
 	 * If this is not a {@link NSReal}
-	 * we will try to derive a double from the value.
+	 * the double is derived from the value.
 	 * @return	the double
 	 */
 	public abstract double toDouble();
