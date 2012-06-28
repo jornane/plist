@@ -1,4 +1,4 @@
-package util;
+package net.sf.plist.util;
 
 import java.util.Arrays;
 

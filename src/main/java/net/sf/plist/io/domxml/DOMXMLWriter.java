@@ -41,12 +41,12 @@ import javax.xml.transform.stream.StreamResult;
 import net.sf.plist.*;
 import net.sf.plist.io.PropertyListException;
 import net.sf.plist.io.PropertyListWriter;
+import net.sf.plist.util.Base64;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import util.Base64;
 
 /**
  * Serializes a tree consisting of {@link NSObject}s to an XML property list

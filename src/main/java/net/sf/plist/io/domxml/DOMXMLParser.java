@@ -38,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.sf.plist.*;
 import net.sf.plist.io.PropertyListException;
 import net.sf.plist.io.PropertyListParser;
+import net.sf.plist.util.Base64;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,7 +48,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import util.Base64;
 
 /**
  * Parses XML property list files to a tree consisting of {@link NSObject}s
