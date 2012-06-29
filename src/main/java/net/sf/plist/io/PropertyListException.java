@@ -27,24 +27,20 @@ package net.sf.plist.io;
 public class PropertyListException extends Exception {
 	private static final long serialVersionUID = 1L;
 	
-	/** @see Exception#Exception() */
-	public PropertyListException() {
-		super();
+	/**
+	 * Construct a new exception stating a reason and a cause.
+	 * @see Exception#Exception(String, Throwable)
+	 */
+	public PropertyListException(String reason, Throwable cause) {
+		super(reason, cause);
 	}
 	
-	/** @see Exception#Exception(Throwable) */
-	public PropertyListException(Throwable e) {
-		super(e);
-	}
-	
-	/** @see Exception#Exception(String, Throwable) */
-	public PropertyListException(String string, Throwable e) {
-		super(string, e);
-	}
-	
-	/** @see Exception#Exception(String) */
-	public PropertyListException(String string) {
-		super(string);
+	/**
+	 * Construct a new exception stating a reason but no cause.
+	 * @see Exception#Exception(String)
+	 */
+	public PropertyListException(String reason) {
+		super(reason);
 	}
 
 }
