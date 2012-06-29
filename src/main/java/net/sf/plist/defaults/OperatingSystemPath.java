@@ -28,6 +28,10 @@ import java.io.InputStreamReader;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 
+import net.sf.plist.defaults.Scope.SystemScope;
+import net.sf.plist.defaults.Scope.UserByHostScope;
+import net.sf.plist.defaults.Scope.UserScope;
+
 /**
  * Helper class for {@link NSDefaults} to provide defaults on multiple operating systems.
  */
@@ -40,14 +44,12 @@ abstract class OperatingSystemPath {
 		/** {@inheritDoc} */
 		@Override
 		public File getPListPath(final Scope scope) {
-			switch(scope) {
-				case USER:
-					return new File(System.getProperty("user.home")+"/.preferences/");
-				case USER_BYHOST:
-					return new File(System.getProperty("user.home")+"/.preferences/ByHost/");
-				case SYSTEM:
-					return new File("/etc/preferences/");
-			}
+			if (scope instanceof UserScope)
+				return new File(System.getProperty("user.home")+"/.preferences/");
+			if (scope instanceof UserByHostScope)
+				return new File(System.getProperty("user.home")+"/.preferences/ByHost/");
+			if (scope instanceof SystemScope)
+				return new File("/etc/preferences/");
 			throw new NullPointerException();
 		}
 		
@@ -64,14 +66,12 @@ abstract class OperatingSystemPath {
 		/** {@inheritDoc} */
 		@Override
 		public File getPListPath(final Scope scope) {
-			switch(scope) {
-				case USER:
-					return new File(System.getProperty("user.home")+"/Library/Preferences/");
-				case USER_BYHOST:
-					return new File(System.getProperty("user.home")+"/Library/Preferences/ByHost/");
-				case SYSTEM:
-					return new File("/Library/Preferences/");
-			}
+			if (scope instanceof UserScope)
+				return new File(System.getProperty("user.home")+"/Library/Preferences/");
+			if (scope instanceof UserByHostScope)
+				return new File(System.getProperty("user.home")+"/Library/Preferences/ByHost/");
+			if (scope instanceof SystemScope)
+				return new File("/Library/Preferences/");
 			throw new NullPointerException();
 		}
 		
@@ -125,14 +125,12 @@ abstract class OperatingSystemPath {
 		/** {@inheritDoc} */
 		@Override
 		public File getPListPath(Scope scope) {
-			switch(scope) {
-			case USER:
+			if (scope instanceof UserScope)
 				return new File(System.getenv("APPDATA")+"\\Preferences\\");
-			case USER_BYHOST:
+			if (scope instanceof UserByHostScope)
 				return new File(System.getenv("APPDATA")+"\\Preferences\\ByHost\\");
-			case SYSTEM:
+			if (scope instanceof SystemScope)
 				return new File(System.getenv("ALLUSERSPROFILE")+"\\Preferences\\");
-			}
 			throw new NullPointerException();
 		}
 		
@@ -253,14 +251,18 @@ abstract class OperatingSystemPath {
 	 * Generate a {@link FilenameFilter} to be used to find
 	 * Property List files representing a domain.
 	 * @param scope	The scope of the Property List files intended to be found, should correspond with the path being searched.
+	 * 	If the scope is null, a scope is assumed for which no machineUUID is available or required.
+	 *  This means that, if the scope of the files found actually is by host, all .plist files are returned instead of only the files of one host.
+	 *  The private method {@link NSDefaults#initDomains()} takes advantage of this behaviour because it allows listing of available hosts.
 	 * @return	The {@link FilenameFilter}
 	 */
 	FilenameFilter getFilter(final Scope scope) {
 		return new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				if (scope.isByHost())
-					return name != null && name.length() > 7+getMachineUUID().length() && name.substring(name.length()-7-getMachineUUID().length()).equalsIgnoreCase("."+getMachineUUID()+".plist");
-				else
+				if (scope != null && scope instanceof UserByHostScope) {
+					String machineUUID = ((UserByHostScope) scope).machineUUID;
+					return name != null && name.length() > 7+machineUUID.length() && name.substring(name.length()-7-machineUUID.length()).equalsIgnoreCase("."+machineUUID+".plist");
+				} else // scope == null || scope !instanceof UserByHostScope
 					return name != null && name.length() > 6 && name.substring(name.length()-6).equalsIgnoreCase(".plist");
 			}};
 	}

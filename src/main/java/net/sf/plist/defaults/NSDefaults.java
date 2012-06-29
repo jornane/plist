@@ -24,7 +24,6 @@ package net.sf.plist.defaults;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +34,7 @@ import java.util.TreeMap;
 
 import net.sf.plist.NSDictionary;
 import net.sf.plist.NSObject;
+import net.sf.plist.defaults.Scope.UserByHostScope;
 import net.sf.plist.io.PropertyListException;
 import net.sf.plist.io.PropertyListParser;
 import net.sf.plist.io.PropertyListWriter;
@@ -63,7 +63,7 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	private static boolean domainsInitialized = false;
 	
 	/** Collection of all instances, grouped by {@link Scope} and domain */
-	private final static Map<Scope, HashMap<String, NSDefaults>> INSTANCES;
+	private final static Map<Scope, HashMap<String, NSDefaults>> INSTANCES = new HashMap<Scope,HashMap<String,NSDefaults>>();
 	
 	/** Instance of {@link OperatingSystemPath} for current operating system */
 	public final static OperatingSystemPath OSPATH = OperatingSystemPath.getInstance();
@@ -77,21 +77,27 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	private final HashMap<String,NSObject> modifications = new HashMap<String,NSObject>();
 	/** Set containing all names of keys that have been removed since last commit, or since initialization if not committed yet */
 	private final HashSet<String> removals = new HashSet<String>();
-	/** True if {@link #clear()} has been called since last commit, or since initialization if not committed yet */
+	/** 
+	 * True if {@link #clear()} has been called since last commit, or since initialization if not committed yet.
+	 * This indicates that a refresh should NOT read the original Property List file. 
+	 */
 	private boolean cleared = false;
-	/** {@link NSDefaults} is lazy loaded. This variable stays true until the property list file is read for the first time. This happens when a value is read or when a commit is done. It does not happen when a value is written or {@link #clear()} is called. */
-	private boolean virgin;
+	/**
+	 * {@link NSDefaults} is lazy loaded.
+	 * This variable stays true until the property list file is read for the first time.
+	 * This happens when a value is read or when a commit is done.
+	 * It does not happen when a value is written or {@link #clear()} is called.
+	 */
+	private boolean loaded;
+	
+	/** The scope of this object */
+	private Scope scope;
 	
 	/**
-	 * Initialize INSTANCES with all {@link Scope}s
-	 * 
+	 * Lock object to keep {@link #theMap}, {@link #modifications} and {@link #removals} in sync.
+	 * This object is used instead of the instance itself, because that instance might be used for locking by other code.
 	 */
-	static {
-		HashMap<Scope, HashMap<String, NSDefaults>> instances = new HashMap<Scope,HashMap<String,NSDefaults>>();
-		for(Scope s : Scope.values())
-			instances.put(s, new HashMap<String,NSDefaults>());
-		INSTANCES = Collections.unmodifiableMap(instances);
-	}
+	private Object LOCK = new Object();
 	
 	/**
 	 * Construct using a fixed file.
@@ -102,14 +108,31 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 */
 	public NSDefaults(File file) {
 		this.file = file;
-		virgin = true;
+		loaded = false;
 	}
 	
-	private static void initDomains() {
-		for(Scope s : Scope.values())
-			for(String domain : OSPATH.getPListPath(s).list(OSPATH.getFilter(s)))
-				domains.add(domain.substring(0, domain.length()-6-(s.isByHost()?OSPATH.getMachineUUID().length()+1:0)));
+	public static synchronized void initDomains() {
+		for(Scope s : Scope.instances())
+			for(String domain : OSPATH.getPListPath(s).list(OSPATH.getFilter(null))) {
+				String[] elements = domain.split("\\.");
+				String extension = elements[elements.length-1];
+				if (s instanceof UserByHostScope) {
+					String machineUUID = "."+elements[elements.length-2];
+					domain = domain.substring(0, domain.length()-extension.length()-machineUUID.length()-1);
+					Scope.getUserByHostScope(machineUUID);
+				} else {
+					domain = domain.substring(0, domain.length()-extension.length()-1);
+				}
+				domains.add(domain);
+			}
 		domainsInitialized = true;
+	}
+	
+	public static void main(String... args) {
+		initDomains();
+		for(String domain : domains) {
+			System.out.println(domain);
+		}
 	}
 	
 	/**
@@ -119,21 +142,22 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 */
 	synchronized public void commit() throws PropertyListException, IOException {
 		file.getParentFile().mkdirs();
-		synchronized(theMap) { synchronized(modifications) { synchronized(removals) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			PropertyListWriter.write(new NSDictionary(this), file);
 			modifications.clear();
 			removals.clear();
 			cleared = false;
-		}}}
+		}
 	}
 	
 	/**
 	 * Re-read all information from the Property List file
 	 */
 	synchronized public void refresh() {
-		synchronized(theMap) { synchronized(modifications) { synchronized(removals) {
-			virgin = false;
+		synchronized(LOCK) {
+			loaded = true;
 			theMap.clear();
 			if (!cleared) {
 				theMap.putAll(getRoot(file).toMap());
@@ -141,7 +165,7 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 					theMap.remove(key);
 			}
 			theMap.putAll(modifications);
-		}}}
+		}
 	}
 	
 	/**
@@ -173,21 +197,27 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	/**
 	 * Get instance for a given domain
 	 * 
-	 * @param domain the domain
+	 * @param domain the domain, null for the global preferences
 	 * @param scope the scope
 	 * @return	the instance
 	 */
-	public synchronized static final NSDefaults getInstance(String domain, Scope scope) {
-		if (domain == null || domain.length() == 0)
-			return getGlobalInstance(scope);
+	public static final NSDefaults getInstance(String domain, Scope scope) {
 		HashMap<String, NSDefaults> instances = INSTANCES.get(scope);
 		if (instances == null)
-			throw new IllegalArgumentException("Unknown scope");
-		if (instances.containsValue(domain))
+			synchronized(INSTANCES) {
+				if (instances == null)
+					INSTANCES.put(scope, instances = new HashMap<String, NSDefaults>());
+			}
+		else if (instances.containsValue(domain))
 			return instances.get(domain);
-		NSDefaults result = new NSDefaults(OSPATH.getPListFile(domain, scope));
-		instances.put(domain, result);
-		return result;
+		synchronized(instances) {
+			if (instances.containsValue(domain))
+				return instances.get(domain);
+			NSDefaults result = new NSDefaults(OSPATH.getPListFile(domain, scope));
+			result.scope = scope;
+			instances.put(domain, result);
+			return result;
+		}
 	}
 	
 	/**
@@ -219,8 +249,8 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 * @return	the domain
 	 */
 	public static String getDomainForName(String canonicalName) {
-		if (domainsInitialized) synchronized(domains) {
-			if (domainsInitialized)
+		if (!domainsInitialized) synchronized(domains) {
+			if (!domainsInitialized)
 				initDomains();
 		}
 		if (canonicalName.toLowerCase().startsWith("java.") || canonicalName.toLowerCase().startsWith("javax."))
@@ -265,10 +295,20 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	 * @return	the dictionary
 	 */
 	public NSDictionary toDictionary() {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return new NSDictionary(theMap);
 		}
+	}
+	
+	/**
+	 * Get the scope for this instance.
+	 * The scope is null if this object was created using the public constructor.
+	 * @return	the scope
+	 */
+	public Scope getScope() {
+		return scope;
 	}
 	
 	  //////////////////////////////////
@@ -277,95 +317,84 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	
 	/** {@inheritDoc} */
 	public int size() {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.size();
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public boolean isEmpty() {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.isEmpty();
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public boolean containsKey(Object key) {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.containsKey(key);
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public boolean containsValue(Object value) {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.containsValue(value);
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public NSObject get(Object key) {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.get(key);
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public NSObject put(String key, NSObject value) {
-		synchronized(removals) {
+		synchronized(LOCK) {
 			removals.remove(key);
-			synchronized(modifications) {
-				modifications.put(key, value);
-				synchronized(theMap) {
-					return theMap.put(key, value);
-				}
-			}
+			modifications.put(key, value);
+			return theMap.put(key, value);
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public NSObject remove(Object key) {
-		if (key instanceof String) synchronized(removals) {
+		if (key instanceof String) synchronized(LOCK) {
 			removals.add(key.toString());
-			synchronized(modifications) {
-				modifications.remove(key);
-				synchronized(theMap) {
-					return theMap.remove(key);
-				}
-			}
+			modifications.remove(key);
+			return theMap.remove(key);
 		}
 		return null;
 	}
 	
 	/** {@inheritDoc} */
 	public void putAll(Map<? extends String, ? extends NSObject> m) {
-		synchronized(removals) {
+		synchronized(LOCK) {
 			removals.removeAll(m.keySet());
-			synchronized(modifications) {
-				modifications.putAll(m);
-				synchronized(theMap) {
-					theMap.putAll(m);
-				}
-			}
+			modifications.putAll(m);
+			theMap.putAll(m);
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public void clear() {
-		synchronized(removals) {
-			synchronized(theMap) {
-				removals.clear();
-				cleared = true;
-				synchronized(modifications) {
-					modifications.clear();
-					theMap.clear();
-				}
-			}
+		synchronized(LOCK) {
+			removals.clear();
+			cleared = true;
+			modifications.clear();
+			theMap.clear();
 		}
 	}
 	
@@ -376,64 +405,72 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 	
 	/** {@inheritDoc} */
 	public SortedMap<String, NSObject> subMap(String fromKey, String toKey) {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.subMap(fromKey, toKey);
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public SortedMap<String, NSObject> headMap(String toKey) {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.headMap(toKey);
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public SortedMap<String, NSObject> tailMap(String fromKey) {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.headMap(fromKey);
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public String firstKey() {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.firstKey();
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public String lastKey() {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.lastKey();
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public Set<String> keySet() {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.keySet();
 		}
 	}
 	
 	/** {@inheritDoc} */
 	public Collection<NSObject> values() {
-		synchronized(theMap) {
-			if (virgin) refresh();
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.values();
 		}
 	}
 	
 	/** {@inheritDoc} */
-	public Set<java.util.Map.Entry<String, NSObject>> entrySet() {
-		synchronized(theMap) {
-			if (virgin) refresh();
+	public Set<Entry<String, NSObject>> entrySet() {
+		synchronized(LOCK) {
+			if (!loaded)
+				refresh();
 			return theMap.entrySet();
 		}
 	}

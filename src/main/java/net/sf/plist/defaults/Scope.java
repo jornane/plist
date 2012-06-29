@@ -21,6 +21,12 @@ Project page on http://plist.sf.net/
 */
 package net.sf.plist.defaults;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * The scope indicates who has access to a specific {@link NSDefaults} instance.
  * This can be either {@link #USER} or {@link #SYSTEM} where the first
@@ -28,31 +34,86 @@ package net.sf.plist.defaults;
  * A special {@link Scope} is {@link #USER_BYHOST} which is specific for
  * the current user but only on the host the program is currently running on.
  */
-public enum Scope {
+abstract public class Scope {
 	
-	SYSTEM(false),
-	USER(false),
-	USER_BYHOST(true),
-	;
+	private static final Set<Scope> INSTANCES = Collections.synchronizedSet(new HashSet<Scope>());
+	private static final Map<String,UserByHostScope> HOST_INSTANCES = new HashMap<String,UserByHostScope>();
 	
-	/** @see Scope#isByHost() */
-	private final boolean isByHost;
-
-	/**
-	 * Instantiate a {@link Scope}
-	 * @param isByHost determines if this scope is by host.
-	 * @see Scope#isByHost()
-	 */
-	private Scope(boolean isByHost) {
-		this.isByHost = isByHost;
+	public static final SystemScope SYSTEM = new SystemScope();
+	public static final UserScope USER = new UserScope();
+	public static final UserByHostScope USER_BY_THIS_HOST = getUserByHostScope();
+	
+	public static SystemScope getSystemScope() {
+		return SYSTEM;
+	}
+	public static UserScope getUserScope() {
+		return USER;
+	}
+	public static UserByHostScope getUserByHostScope() {
+		return getUserByHostScope(OperatingSystemPath.getInstance().buildMachineUUID());
+	}
+	public static UserByHostScope getUserByHostScope(String machineUUID) {
+		if (HOST_INSTANCES.containsKey(machineUUID))
+			return HOST_INSTANCES.get(machineUUID);
+		synchronized(HOST_INSTANCES) {
+			if (!HOST_INSTANCES.containsKey(machineUUID))
+				HOST_INSTANCES.put(machineUUID, new UserByHostScope(machineUUID));
+		}
+		return getUserByHostScope(machineUUID);
 	}
 	
+	Scope() {
+		INSTANCES.add(this);
+	}
+		
 	/**
 	 * Determine if this scope is by host.
 	 * If it is, a machine UUID needs to be appended to the filename
 	 */
-	public boolean isByHost() {
-		return isByHost;
+	abstract public boolean isByHost();
+	
+	public static Scope[] instances() {
+		return INSTANCES.toArray(new Scope[0]);
+	}
+	
+	public static final class SystemScope extends Scope {
+
+		SystemScope() {}
+
+		/** {@inheritDoc} */
+		@Override
+		public boolean isByHost() {
+			return false;
+		}
+
+	}
+
+	public static final class UserByHostScope extends Scope {
+
+		public final String machineUUID;
+
+		UserByHostScope(String machineUUID) {
+			this.machineUUID = machineUUID;
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		public boolean isByHost() {
+			return true;
+		}
+
+	}
+	
+	public static final class UserScope extends Scope {
+
+		UserScope() {}
+
+		/** {@inheritDoc} */
+		@Override
+		public boolean isByHost() {
+			return false;
+		}
+
 	}
 
 }
