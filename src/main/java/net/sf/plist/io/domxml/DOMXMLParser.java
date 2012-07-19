@@ -258,7 +258,7 @@ public final class DOMXMLParser extends PropertyListParser {
 	protected static NSNumber parseNumber(Node node) throws PropertyListException {
 		final String number = node.getTextContent();
 		try {
-			return NSNumber.createInstance(NumberFormat.getNumberInstance(Locale.ROOT).parse(number));
+			return NSNumber.createInstance(NumberFormat.getNumberInstance(new Locale("", "", "")).parse(number));
 		} catch (ParseException pe) {
 			throw new PropertyListException("Expected number but got "+number, pe);
 		}

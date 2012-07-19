@@ -221,7 +221,7 @@ public class DOMXMLWriter extends PropertyListWriter {
 	 */
 	protected Element generateReal(NSReal real) {
 		Element root = doc.createElement("real");
-		root.appendChild(doc.createTextNode(NumberFormat.getInstance(Locale.ROOT).format(real.toDouble())));
+		root.appendChild(doc.createTextNode(NumberFormat.getInstance(new Locale("", "", "")).format(real.toDouble())));
 		return root;
 	}
 	
