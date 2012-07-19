@@ -166,11 +166,25 @@ public abstract class NSObject {
 	 * <li>For {@link NSCollection}: the amount of children</li>
 	 * <li>For {@link NSData}: the length in bytes</li>
 	 * <li>For {@link NSBoolean}: always byte; 0 for false, 1 for true</li>
-	 * <li>For {@link NSString}: If the String is numeric, return the number in the string. Otherwise return 0</li>
+	 * <li>For {@link NSString}: If the String is numeric, return the number in the string. Otherwise return 0<sup>*</sup></li>
 	 * </ul>
 	 * 
 	 * <p>If you need to be sure about the result (e.g. you need to know if the result
 	 * is user intended or a guess) you should do instanceof checks yourself.</p>
+	 * <p><sup>*</sup>This behaviour is exactly as the library works
+	 * and even though one could argue that the method should return null instead of 0,
+	 * the method returns 0 and will never return null. There are a couple reasons for this:
+	 * <ul>
+	 * <li><b>The methods {@link #toLong()} and {@link #toDouble()} use {@link #toNumber()};</b><br />
+	 * 	returning null would cause {@link NullPointerException}s.</li>
+	 * <li><b>Just calling {@link #toNumber()} on any {@link NSObject} is dirty anyway.</b><br />
+	 * 	If you want to be sure that your number is really a number,
+	 * 	check if your {@link NSObject} is an {@link NSNumber}.</li>
+	 * <li><b>If the implementation would fail on non-numeric Strings,
+	 * 	the implementing programmer would need to check for these failures.</b><br />
+	 * 	By not failing explicitly, the programmer can still conduct some checks,
+	 * 	but is not forced to do so if these checks are not important.</li>
+	 * </ul>
 	 * @return	the number
 	 */
 	public Number toNumber() {
@@ -180,7 +194,7 @@ public abstract class NSObject {
 	/**
 	 * Return the value as a long.
 	 * If this is not a {@link NSInteger}
-	 * the long is derived from the value.
+	 * the long value is derived from the actual value.
 	 * @return	the long
 	 */
 	public abstract long toLong();
@@ -197,7 +211,7 @@ public abstract class NSObject {
 	/**
 	 * Return the value as a double.
 	 * If this is not a {@link NSReal}
-	 * the double is derived from the value.
+	 * the double value is derived from the actual value.
 	 * @return	the double
 	 */
 	public abstract double toDouble();
