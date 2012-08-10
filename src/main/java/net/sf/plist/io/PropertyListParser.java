@@ -44,15 +44,15 @@ public abstract class PropertyListParser {
 	 * Construct a new PropertyListParser which will parse a InputStream
 	 * @param input the InputStream to parse
 	 */
-	public PropertyListParser(InputStream input) {
+	public PropertyListParser(final InputStream input) {
 		this(null, input);
 	}
 	/**
-	 * Construct a new PropertyListParser
+	 * Construct a new PropertyListParser. input represents the file (if not null).
 	 * @param file the file to parse or <code>null</code>
 	 * @param input the InputStream to parse
 	 */
-	protected PropertyListParser(File file, InputStream input) {
+	protected PropertyListParser(final File file, final InputStream input) {
 		this.file = file;
 		this.input = input;
 	}
@@ -70,13 +70,17 @@ public abstract class PropertyListParser {
 	 * @throws PropertyListException when parsing the file failed
 	 * @throws IOException when reading the file failed
 	 */
-	public static NSObject parse(File file) throws PropertyListException, IOException {
+	public static NSObject parse(final File file) throws PropertyListException, IOException {
 		if (file == null)
 			throw new NullPointerException("file");
 		try {
 			return new BinaryParser(file).parse();
-		} catch (PropertyListException e) {
-			return new DOMXMLParser(file).parse();
+		} catch (PropertyListException e1) {
+			try {
+				return new DOMXMLParser(file).parse();
+			} catch (PropertyListException e2) {
+				throw new CompoundPropertyListException(e1, e2);
+			}
 		}
 	}
 
@@ -92,16 +96,20 @@ public abstract class PropertyListParser {
 	 * @throws PropertyListException when parsing the input failed
 	 * @throws IOException when reading the input failed
 	 */
-	public static NSObject parse(InputStream input) throws PropertyListException, IOException {
+	public static NSObject parse(final InputStream input) throws PropertyListException, IOException {
 		if (!input.markSupported())
 			return parse(new BufferedInputStream(input));
 		try {
 			input.mark(Integer.MAX_VALUE);
 			return new BinaryParser(input).parse();
-		} catch (Exception e) {
-			input.reset();
-			input.mark(Integer.MAX_VALUE);
-			return new DOMXMLParser(input).parse();
+		} catch (PropertyListException e1) {
+			try {
+				input.reset();
+				input.mark(Integer.MAX_VALUE);
+				return new DOMXMLParser(input).parse();
+			} catch (PropertyListException e2) {
+				throw new CompoundPropertyListException(e1, e2);
+			}
 		}
 	}
 }
