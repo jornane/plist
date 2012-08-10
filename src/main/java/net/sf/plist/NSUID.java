@@ -31,21 +31,31 @@ import java.util.TreeMap;
  * A NSUID object is rarely seen in the wild.
  * Therefore it is difficult to come up with a good API for it.
  * PLEASE NOTE THAT MY UNDERSTANDING OF THE NSUID IS LIMITED,
- * AND THEREFORE THIS API COULD TURN OUT TO BE WRONG AND WILL NEED TO BE CHANGED. 
+ * AND THEREFORE THIS API COULD TURN OUT TO BE WRONG
+ * AND WILL NEED TO BE CHANGED. 
  * 
- * Apple's own Property List Editor (part of XCode) completely ignores the NSUID.
+ * Apple's own Property List Editor (part of XCode)
+ * completely ignores the NSUID.
  * By using Apple's QuickLook to convert the Property List to XML code,
  * the NSUID object is converted into a NSDictionary with one entry;
- * the key is always CF$UID and the value is the single byte value contained within the NSUID.
+ * the key is always CF$UID and the value is
+ * the single byte value contained within the NSUID.
  * 
- * So far I have only seen the NSUID files in the temporary .appdownload files
+ * So far I have only seen the NSUID files
+ * in the temporary .appdownload files.
  * Mac OS X writes when downloading an app from the Mac App Store.
  * These files have four NSUID values; 0x01, 0x02, 0x03 and 0x04.
  * It is still unclear what these values represent.
- * They could point to objects in the object table but that seems to be unlikely,
- * given the results that would produce.
+ * They could point to objects in the object table
+ * but that seems to be unlikely, given the results that would produce.
  * 
- * This implementation of the NSUID extends {@link NSNumber}, since that is the most basic implementation.
+ * Because the CF$UID is a Number and
+ * QuickLook represents the NSUID as a NSDictionary,
+ * it is difficult to choose where NSUID should extend from,
+ * {@link NSNumber} or {@link NSDictionary}.
+ * Because I can not make a well informed choice
+ * we will override from {@link NSObject} for now.
+ * 
  * {@link #toMap()} and {@link #toList()} are overridden to return a single entry.
  * The key of the entry in the map is CF$UID.
  */
