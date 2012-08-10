@@ -157,10 +157,12 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 			return writeDictionary((NSDictionary) obj);
 		else if (obj instanceof NSInteger)
 			return writeInteger((NSInteger) obj);
-		else if (obj instanceof NSNumber)
+		else if (obj instanceof NSReal)
 			return writeReal((NSReal) obj);
 		else if (obj instanceof NSString)
 			return writeString((NSString) obj);
+		else if (obj instanceof NSUID)
+			return writeUID((NSUID) obj);
 		else throw new PropertyListException("Unknown NSObjecttype; "+obj.getClass().getSimpleName());
 	}
 	
@@ -311,6 +313,18 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 		long len = writeObjectHeader(str.length(), isAscii ? ASCIISTRING : UNICODESTRING);
 		stream.write(bytes);
 		return len+bytes.length;
+	}
+	
+	/**
+	 * Write a CF$UID to the stream
+	 * @param obj	the NSUID containing the CF$UID
+	 * @return	the amount of bytes written
+	 * @throws IOException if an I/O error occurs
+	 */
+	protected long writeUID(NSUID obj) throws IOException {
+		writeObjectHeader(0, UID);
+		stream.write(obj.getCfUid());
+		return 2; // one byte header, one byte UID
 	}
 	
 	/**

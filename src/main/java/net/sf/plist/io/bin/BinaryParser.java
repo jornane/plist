@@ -267,17 +267,15 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	}
 	
 	/**
-	 * Parse a NSUID (not implemented)
+	 * Parse a NSUID. No documentation has been found on how to parse these.
 	 * @param length the length byte
 	 * @return null
 	 * @throws IOException when reading the stream failed while parsing
 	 * @throws PropertyListException when parsing fails
 	 */
 	protected NSObject parseUid(byte length) throws IOException, PropertyListException {
-		//byte[] buffer = new byte[length+1];
-		//file.read(buffer);
-		// TODO how should those be handled?
-		return null;
+		int cfUid = stream.read();
+		return new NSUID(cfUid);
 	}
 	
 	/**
@@ -312,7 +310,7 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 		//byte[] buffer = new byte[getLength(length)*objRefSize];
 		//file.read(buffer);
 		// TODO how should those be handled?
-		return null;
+		throw new UnsupportedOperationException("NSSet");
 	}
 	
 	/**

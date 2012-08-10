@@ -144,10 +144,12 @@ public class DOMXMLWriter extends PropertyListWriter {
 			return generateDictionary((NSDictionary) obj);
 		else if (obj instanceof NSInteger)
 			return generateInteger((NSInteger) obj);
-		else if (obj instanceof NSNumber)
+		else if (obj instanceof NSReal)
 			return generateReal((NSReal) obj);
 		else if (obj instanceof NSString)
 			return generateString((NSString) obj);
+		else if (obj instanceof NSUID)
+			return generateUID((NSUID) obj);
 		else throw new PropertyListException("Unknown NSObjecttype; "+obj.getClass().getSimpleName());
 	}
 	
@@ -247,6 +249,20 @@ public class DOMXMLWriter extends PropertyListWriter {
 		Element root = doc.createElement("string");
 		root.appendChild(doc.createTextNode(string.getValue()));
 		return root;
+	}
+	
+	/**
+	 * Convert an NSUID to an XML element.
+	 * This will use the same method used by Apple's QuickLook implementation.
+	 * In technical terms, this method will call {@link #generateDictionary(NSDictionary)}
+	 * with {@link NSUID#toMap()} as the argument.
+	 * WARNING: THIS METHOD WILL CONVERT THE {@link NSUID} TO AN {@link NSDictionary}!
+	 * @param uid the NSUID to convert
+	 * @return the XML element
+	 * @throws PropertyListException when generating the property list fails
+	 */
+	protected Element generateUID(NSUID uid) throws DOMException, PropertyListException {
+		return generateDictionary(new NSDictionary(uid.toMap()));
 	}
 	
 	/**

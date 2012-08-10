@@ -128,13 +128,6 @@ public final class NSDefaults implements SortedMap<String,NSObject> {
 		domainsInitialized = true;
 	}
 	
-	public static void main(String... args) {
-		initDomains();
-		for(String domain : domains) {
-			System.out.println(domain);
-		}
-	}
-	
 	/**
 	 * Write all changes to the Property List file
 	 * @throws PropertyListException	constructing the Property List file failed
