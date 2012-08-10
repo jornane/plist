@@ -22,7 +22,7 @@ Project page on http://plist.sf.net/
 package net.sf.plist;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
@@ -102,8 +102,8 @@ public abstract class NSObject {
 	 * if this object is a {@link NSDictionary}. Otherwise an <b>empty</b> list is returned.
 	 * @return	the list
 	 */
-	public List<NSObject> toList() {
-		return new ArrayList<NSObject>();
+	public List<? extends NSObject> toList() {
+		return Collections.<NSObject>emptyList();
 	}
 	
 	/**
@@ -151,8 +151,8 @@ public abstract class NSObject {
 	 * if this object is a {@link NSArray}. Otherwise an <b>empty</b> list is returned.
 	 * @return	the list
 	 */
-	public SortedMap<String, NSObject> toMap() {
-		return new TreeMap<String,NSObject>();
+	public SortedMap<String, ? extends NSObject> toMap() {
+		return Collections.unmodifiableSortedMap(new TreeMap<String,NSObject>());
 	}
 	
 	/**
