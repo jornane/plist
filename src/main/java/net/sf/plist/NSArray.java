@@ -41,7 +41,7 @@ public final class NSArray extends NSCollection {
 	 * Constructor.
 	 * @param theList the contents of new object
 	 */
-	public NSArray(List<NSObject> theList) {
+	public NSArray(List<? extends NSObject> theList) {
 		this.theList = Collections.unmodifiableList(theList);
 	}
 	
@@ -93,7 +93,7 @@ public final class NSArray extends NSCollection {
 	/** {@inheritDoc} */
 	@Override
 	public SortedMap<String, NSObject> toMap() {
-		int i = 1;
+		int i = 0;
 		TreeMap<String, NSObject> result = new TreeMap<String, NSObject>();
 		for(NSObject o : theList) {
 			result.put("item "+i, o);
