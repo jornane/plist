@@ -212,7 +212,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeBoolean(NSBoolean obj) throws IOException {
-		stream.write(obj == NSBoolean.TRUE ? BOOLTRUE : BOOLFALSE);
+		stream.write(NSBoolean.TRUE.equals(obj) ? BOOLTRUE : BOOLFALSE);
 		return 1;
 	}
 	
