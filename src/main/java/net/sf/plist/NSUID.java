@@ -39,10 +39,10 @@ import java.util.TreeMap;
  * By using Apple's QuickLook to convert the Property List to XML code,
  * the NSUID object is converted into a NSDictionary with one entry;
  * the key is always CF$UID and the value is
- * the single byte value contained within the NSUID.
+ * the unsigned 32bits integer value contained within the NSUID.
  * 
  * So far I have only seen the NSUID files
- * in the temporary .appdownload files.
+ * in the temporary .appdownload files
  * Mac OS X writes when downloading an app from the Mac App Store.
  * These files have four NSUID values; 0x01, 0x02, 0x03 and 0x04.
  * It is still unclear what these values represent.
@@ -54,24 +54,26 @@ import java.util.TreeMap;
  * it is difficult to choose where NSUID should extend from,
  * {@link NSNumber} or {@link NSDictionary}.
  * Because I can not make a well informed choice
- * we will override from {@link NSObject} for now.
+ * we will inheirit from {@link NSObject} for now.
  * 
  * {@link #toMap()} and {@link #toList()} are overridden to return a single entry.
- * The key of the entry in the map is CF$UID.
+ * The key of the entry in the map is {@value #CFUIDKEY}.
  */
 public final class NSUID extends NSObject {
-
-	/** Single byte value */
-	private final int cfUid;
+	
+	/** The string CF$UID, used in XML Property List files */
+	public static final String CFUIDKEY = "CF$UID";
+	/** CF$UID value */
+	private final long cfUid;
 	
 	/**
-	 * Construct a new object with a given CF$UID
+	 * Construct a new object with a given CF$UID.
+	 * Note that a CF$UID is never negative and should be representable using at most 4 bytes.
+	 * 
 	 * @param cfUid	the CF$UID
 	 */
-	public NSUID(int cfUid) {
-		assert cfUid >= 0;
-		assert cfUid <= 255;
-		this.cfUid = cfUid;
+	public NSUID(long cfUid) {
+		this.cfUid = cfUid & 0xFFFFFFFFL;
 	}
 	
 	/**
@@ -79,7 +81,7 @@ public final class NSUID extends NSObject {
 	 * @see #toMap()
 	 */
 	@Override
-	public Integer getValue() {
+	public Long getValue() {
 		return toNumber();
 	}
 	/**
@@ -90,7 +92,7 @@ public final class NSUID extends NSObject {
 	@Override
 	public SortedMap<String, NSInteger> toMap() {
 		TreeMap<String, NSInteger> result = new TreeMap<String,NSInteger>();
-		result.put("CF$UID", new NSInteger(cfUid));
+		result.put(CFUIDKEY, new NSInteger(cfUid));
 		return Collections.unmodifiableSortedMap(result);
 	}
 	
@@ -118,15 +120,15 @@ public final class NSUID extends NSObject {
 
 	/** @see #getCfUid() */
 	@Override
-	public Integer toNumber() {
-		return new Integer(getCfUid());
+	public Long toNumber() {
+		return new Long(getCfUid());
 	}
 	
 	/**
 	 * Return the CF$UID value
 	 * @return	value of CF$UID
 	 */
-	public int getCfUid() {
+	public long getCfUid() {
 		return cfUid;
 	}
 
