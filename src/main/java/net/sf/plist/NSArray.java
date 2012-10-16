@@ -22,6 +22,7 @@ Project page on http://plist.sf.net/
 package net.sf.plist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
@@ -43,6 +44,13 @@ public final class NSArray extends NSCollection {
 	 */
 	public NSArray(List<? extends NSObject> theList) {
 		this.theList = Collections.unmodifiableList(theList);
+	}
+	/**
+	 * Constructor.
+	 * @param theList the contents of new object
+	 */
+	public NSArray(NSObject[] theList) {
+		this.theList = Collections.unmodifiableList(Arrays.asList(theList));
 	}
 	
 	/**
