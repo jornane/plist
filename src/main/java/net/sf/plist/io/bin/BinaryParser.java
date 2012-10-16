@@ -268,14 +268,20 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	
 	/**
 	 * Parse a NSUID. No documentation has been found on how to parse these.
+	 * By generating a couple of files with a binary editor and checking them with Apple Quicklook,
+	 * it appears that the length bits are equal 
+	 * 
 	 * @param length the length byte
 	 * @return null
 	 * @throws IOException when reading the stream failed while parsing
 	 * @throws PropertyListException when parsing fails
 	 */
 	protected NSObject parseUid(byte length) throws IOException, PropertyListException {
-		int cfUid = stream.read();
-		return new NSUID(cfUid);
+		if (length > 3)
+			throw new PropertyListException("An NSUID cannot be longer than 4 bytes (max length value: 3, given: "+length+")");
+		byte[] buffer = new byte[length+1];
+		stream.read(buffer);
+		return new NSUID(getLong(buffer));
 	}
 	
 	/**

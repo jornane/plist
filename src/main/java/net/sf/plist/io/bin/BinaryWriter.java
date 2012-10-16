@@ -322,9 +322,11 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	 * @throws IOException if an I/O error occurs
 	 */
 	protected long writeUID(NSUID obj) throws IOException {
-		writeObjectHeader(0, UID);
-		stream.write(obj.getCfUid());
-		return 2; // one byte header, one byte UID
+		final long cfUid = obj.getCfUid();
+		final byte length = getLongLength(cfUid);
+		stream.write(UID << 4 | length-1);
+		stream.write(longToByteArray(cfUid, length));
+		return length + 1;
 	}
 	
 	/**
