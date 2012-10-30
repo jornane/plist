@@ -35,25 +35,19 @@ import net.sf.plist.io.domxml.DOMXMLWriter;
  */
 public abstract class PropertyListWriter {
 
-	/** Consists of possible output formats */
-	public static enum Format {
-		/** Represents the JSON property list format */
-		JSON,
-		/** Represents the XML property list format */
-		XML,
-		/** Represents the binary property list format */
-		BINARY
-		}
-	
 	/**
 	 * The default format used when {@link #write(NSObject, File)} is called.
-	 * This usually is {@link Format#BINARY} on Mac OS X or {@link Format#XML} on other operating systems,
+	 * This usually is {@link PropertyListFormat#BINARY} on Mac OS X or {@link PropertyListFormat#XML} on other operating systems,
 	 * but might differ since this field is <b>not</b> final.
 	 * If you need a specific format you should <b>not</b> rely on the contents of this field to stay the same.
-	 * Instead you should specify the format as an argument in the {@link #write(NSObject, File, Format)} method.
-	 * If you do not need a specific format then it is safe to use the {@link #write(OutputStream)} method without {@link Format} argument.  
+	 * Instead you should specify the format as an argument in the {@link #write(NSObject, File, PropertyListFormat)} method.
+	 * If you do not need a specific format then it is safe to use the {@link #write(OutputStream)} method without {@link PropertyListFormat} argument.  
 	 */
-	public static Format defaultFormat = System.getProperty("os.name").toLowerCase().contains("mac") ? Format.BINARY : Format.XML;
+	public static PropertyListFormat DEFAULTFORMAT;
+	
+	static {
+		DEFAULTFORMAT = getDefaultFormat();
+	}
 	
 	/** The root object of the tree */
 	final protected NSObject root;
@@ -66,6 +60,18 @@ public abstract class PropertyListWriter {
 		this.root = root;
 	}
 	
+	/**
+	 * Get the default format for generating Property List files.
+	 * @return	the default format
+	 */
+	protected static PropertyListFormat getDefaultFormat() {
+		String osName = System.getProperty("os.name");
+		if (osName != null && osName.toLowerCase().contains("mac"))
+			return PropertyListFormat.BINARY;
+		else
+			return PropertyListFormat.XML;
+	}
+
 	/**
 	 * Write the property list to a stream
 	 * @param stream the stream to write the property list to
@@ -83,24 +89,23 @@ public abstract class PropertyListWriter {
 	 * @throws ParserConfigurationException when unable to create an XML document
 	 * @throws IOException when writing to the stream fails
 	 */
-	public static void write(NSObject root, OutputStream stream, Format format)
+	public static void write(NSObject root, OutputStream stream, PropertyListFormat format)
 		throws PropertyListException, IOException
 	{
 		switch(format) {
 			case BINARY:new BinaryWriter(root).write(stream);break;
 			case XML:new DOMXMLWriter(root).write(stream);break;
-			case JSON:throw new UnsupportedOperationException("JSON property list format is not supported yet.");
 			default:throw new NullPointerException("format");
 		}
 	}
 	/**
 	 * Convert a tree to a property list and write it to a stream
-	 * @see PropertyListWriter#write(NSObject, OutputStream, Format)
+	 * @see PropertyListWriter#write(NSObject, OutputStream, PropertyListFormat)
 	 */
 	public static void write(NSObject root, File file)
 		throws PropertyListException, IOException
 	{
-		write(root, file, defaultFormat);
+		write(root, file, null);
 	}
 	/**
 	 * Convert a tree to a property list and write it to a file 
@@ -111,9 +116,15 @@ public abstract class PropertyListWriter {
 	 * @throws ParserConfigurationException when unable to create an XML document
 	 * @throws IOException when writing to the stream fails
 	 */
-	public static void write(NSObject root, File file, Format format)
+	public static void write(NSObject root, File file, PropertyListFormat format)
 		throws PropertyListException, IOException
 	{
+		if (format == null) {
+			format = PropertyListParser.getFormatForFile(file);
+			if (format == null)
+				format = DEFAULTFORMAT;
+			PropertyListFormat.FORMATS.put(file, format);
+		}
 		write(root, new FileOutputStream(file), format);
 	}
 

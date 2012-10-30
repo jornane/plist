@@ -64,6 +64,38 @@ public abstract class PropertyListParser {
 	public abstract NSObject parse() throws PropertyListException;
 	
 	/**
+	 * Get the format for a Property List file.
+	 * If the file has not been read before, it will be read to determine the format.
+	 * 
+	 * @param file	The file which format must be determined.
+	 * @return	The type of file, or null if the type could not be determined for any reason
+	 */
+	public static PropertyListFormat getFormatForFile(File file) {
+		return getFormatForFile(file, false);
+	}
+	/**
+	 * Get the format for a Property List file.
+	 * This implementation is capable of returning null if the file has not been read yet,
+	 * opposed to reading the file and returning the type.
+	 * 
+	 * @param file	The file which format must be determined.
+	 * @param cacheOnly	Do not find out which format a file has if it is not in the cache yet but return null instead.
+	 * @return	The type of file, or null if the type could not be determined for any reason
+	 */
+	public static PropertyListFormat getFormatForFile(File file, boolean cacheOnly) {
+		if (PropertyListFormat.FORMATS.containsKey(file))
+			return PropertyListFormat.FORMATS.get(file);
+		if (cacheOnly)
+			return null;
+		try {
+			parse(file);
+			return PropertyListFormat.FORMATS.get(file);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * Parse a Property List file.
 	 * @param file the file to parse
 	 * @return the root {@link NSObject} of the parsed Property List
@@ -74,10 +106,14 @@ public abstract class PropertyListParser {
 		if (file == null)
 			throw new NullPointerException("file");
 		try {
-			return new BinaryParser(file).parse();
+			NSObject result = new BinaryParser(file).parse();
+			PropertyListFormat.FORMATS.put(file, PropertyListFormat.BINARY);
+			return result;
 		} catch (PropertyListException e1) {
 			try {
-				return new DOMXMLParser(file).parse();
+				NSObject result = new DOMXMLParser(file).parse();
+				PropertyListFormat.FORMATS.put(file, PropertyListFormat.XML);
+				return result;
 			} catch (PropertyListException e2) {
 				throw new CompoundPropertyListException(e1, e2);
 			}
