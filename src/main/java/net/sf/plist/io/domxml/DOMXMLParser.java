@@ -184,12 +184,20 @@ public final class DOMXMLParser extends PropertyListParser {
 	}
 	
 	/**
-	 * Convert a node to an NSDictionary
+	 * Convert a node to an NSDictionary.
+	 * 
+	 * Since the NSUID is also represented as NSDictionary in XML files,
+	 * this function can also return an NSUID if the dictionary meets all of the following requirements:
+	 * <ul>
+	 * <li>The dictionary contains one and only one element.</li>
+	 * <li>The only element in the dictionary has CF$UID as key.</li>
+	 * <li>The only element in the dictionary contains an NSInteger containing a positive value which can be represented with at most 4 bytes.</li>
+	 * </ul>
 	 * @param node the node to parse
 	 * @return the NSDictionary
 	 * @throws PropertyListException when parsing fails
 	 */
-	protected static NSDictionary parseDictionary(Node node) throws PropertyListException {
+	protected static NSObject parseDictionary(Node node) throws PropertyListException {
 		final NodeList children = node.getChildNodes();
 		final TreeMap<String,NSObject> result = new TreeMap<String,NSObject>();
 		String key = null;
@@ -206,6 +214,11 @@ public final class DOMXMLParser extends PropertyListParser {
 				}
 			}
 		}
+		if (result.size() == 1
+				&& result.containsKey(NSUID.CFUIDKEY)
+				&& result.get(NSUID.CFUIDKEY) instanceof NSInteger
+				&& result.get(NSUID.CFUIDKEY).toLong() >> 8*4 == 0)
+			return new NSUID(result.get(NSUID.CFUIDKEY).toLong());
 		return new NSDictionary(result);
 	}
 	
