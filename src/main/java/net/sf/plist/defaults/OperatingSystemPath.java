@@ -27,7 +27,6 @@ import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 
 import net.sf.plist.defaults.Scope.SystemScope;
 import net.sf.plist.defaults.Scope.UserByHostScope;
@@ -48,7 +47,7 @@ abstract class OperatingSystemPath {
 			if (scope instanceof UserScope)
 				return new File(System.getProperty("user.home")+"/.preferences/");
 			if (scope instanceof UserByHostScope)
-				return new File(System.getProperty("user.home")+"/.preferences/ByHost/");
+				return new File(System.getProperty("user.home")+"/.preferences/byhost/");
 			if (scope instanceof SystemScope)
 				return new File("/etc/preferences/");
 			throw new NullPointerException();
@@ -110,7 +109,9 @@ abstract class OperatingSystemPath {
 		public String buildMachineUUID() {
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(
-						Runtime.getRuntime().exec("hal-get-property --udi /org/freedesktop/Hal/devices/computer --key system.hardware.uuid")
+						Runtime.getRuntime().exec(
+								"hal-get-property --udi " +
+								"x/org/freedesktop/Hal/devices/computer --key system.hardware.uuid")
 						.getInputStream()));
 				return reader.readLine();
 			} catch (Exception e) {
@@ -146,7 +147,10 @@ abstract class OperatingSystemPath {
 		public String buildMachineUUID() {
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(
-						Runtime.getRuntime().exec("reg query \"HKLM\\SYSTEM\\ControlSet001\\Control\\IDConfigDB\\Hardware Profiles\\0001\" /v HwProfileGuid")
+						Runtime.getRuntime().exec(
+								"reg query " +
+								"\"HKLM\\SYSTEM\\ControlSet001\\Control\\IDConfigDB\\Hardware Profiles\\0001\" " +
+								"/v HwProfileGuid")
 						.getInputStream()));
 				reader.readLine();
 				reader.readLine();
@@ -186,7 +190,8 @@ abstract class OperatingSystemPath {
 			domain = isLowerCasePreferred() ? ".globalpreferences" : ".GlobalPreferences";
 		if (scope.isByHost())
 			if (isLowerCasePreferred())
-				return new File((getPListPath(scope)+File.separator+domain+"."+buildMachineUUID()+".plist").toLowerCase());
+				return new File((getPListPath(scope)+File.separator+domain+"."+buildMachineUUID()+".plist")
+						.toLowerCase());
 			else
 				return new File(getPListPath(scope)+File.separator+domain+"."+buildMachineUUID()+".plist");
 		return new File(getPListPath(scope)+File.separator+domain+".plist");
@@ -255,10 +260,13 @@ abstract class OperatingSystemPath {
 	/**
 	 * Generate a {@link FilenameFilter} to be used to find
 	 * Property List files representing a domain.
-	 * @param scope	The scope of the Property List files intended to be found, should correspond with the path being searched.
+	 * @param scope	The scope of the Property List files intended to be found,
+	 *  should correspond with the path being searched.
 	 * 	If the scope is null, a scope is assumed for which no machineUUID is available or required.
-	 *  This means that, if the scope of the files found actually is by host, all .plist files are returned instead of only the files of one host.
-	 *  The private method {@link NSDefaults#initDomains()} takes advantage of this behaviour because it allows listing of available hosts.
+	 *  This means that, if the scope of the files found actually is by host,
+	 *  all .plist files are returned instead of only the files of one host.
+	 *  The private method {@link NSDefaults#initDomains()} takes advantage
+	 *  of this behaviour because it allows listing of available hosts.
 	 * @return	The {@link FilenameFilter}
 	 */
 	FilenameFilter getFilter(final Scope scope) {
@@ -266,9 +274,12 @@ abstract class OperatingSystemPath {
 			public boolean accept(File dir, String name) {
 				if (scope != null && scope instanceof UserByHostScope) {
 					String machineUUID = ((UserByHostScope) scope).machineUUID;
-					return name != null && name.length() > 7+machineUUID.length() && name.substring(name.length()-7-machineUUID.length()).equalsIgnoreCase("."+machineUUID+".plist");
-				} else // scope == null || scope !instanceof UserByHostScope
-					return name != null && name.length() > 6 && name.substring(name.length()-6).equalsIgnoreCase(".plist");
+					return name != null && name.length() > 7+machineUUID.length()
+							&& name.substring(name.length()-7-machineUUID.length())
+								.equalsIgnoreCase("."+machineUUID+".plist");
+				} else
+					return name != null && name.length() > 6
+							&& name.substring(name.length()-6).equalsIgnoreCase(".plist");
 			}};
 	}
 
