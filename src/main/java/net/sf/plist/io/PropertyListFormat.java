@@ -1,5 +1,5 @@
 /*
-Abstract Property List Writer - LGPL 3.0 licensed
+Abstract Property List Format - LGPL 3.0 licensed
 Copyright (C) 2012  Yørn de Jong
 
 This library is free software; you can redistribute it and/or

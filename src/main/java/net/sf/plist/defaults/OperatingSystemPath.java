@@ -1,5 +1,5 @@
 /*
-Property List Utility - LGPL 3.0 licensed
+Property List Defaults Cross-platform Library - LGPL 3.0 licensed
 Copyright (C) 2012  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
