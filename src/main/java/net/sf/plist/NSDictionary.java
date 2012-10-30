@@ -21,11 +21,11 @@ Project page on http://plist.sf.net/
 */
 package net.sf.plist;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -35,7 +35,8 @@ import java.util.TreeMap;
  * with {@link String} as keys and {@link NSObject} as values.<br />
  * Usually, the root node of a Property List is a {@link NSDictionary}.</p> 
  * 
- * <p>In this implementation, a {@link SortedMap} is used to represent the {@link NSDictionary}.</p>
+ * <p>In this implementation, a {@link SortedMap} is used
+ * to represent the {@link NSDictionary}.</p>
  * @see SortedMap
  */
 public final class NSDictionary extends NSCollection {
@@ -43,23 +44,34 @@ public final class NSDictionary extends NSCollection {
 	private final SortedMap<String,NSObject> theDictionary;
 	
 	/**
-	 * Standard constructor. Needs a {@link SortedMap} in order to keep the ordering.
-	 * @param sortedMap	value of the new object
+	 * Standard constructor. Needs a {@link SortedMap}
+	 * in order to keep the ordering.
+	 * @param map	value of the new object
 	 */
-	public NSDictionary(SortedMap<String, ? extends NSObject> sortedMap) {
-		this.theDictionary = Collections.unmodifiableSortedMap(sortedMap);
+	public NSDictionary(Map<String, ? extends NSObject> map) {
+		this.theDictionary = Collections.unmodifiableSortedMap(
+				new TreeMap<String,NSObject>(map)
+			);
 	}
+	
 	/**
-	 * Alternative constructor. Will sort the map by key.
-	 * A {@link TreeMap} will be constructed in order to achieve this.
-	 * @param theMap	value of the new object
+	 * Convert a map to a NSDictionary.
+	 * In order for this to work,
+	 * the value objects must be of one of these types:
+	 * - a java.lang object representing a primitive type
+	 * - a NSObject
+	 * - a Map or List which follows the same rules
+	 * 
+	 * {@link NSObject#getValue()} always returns a valid object.
 	 */
-	public NSDictionary(Map<String, ? extends NSObject> theMap) {
-		if (theMap instanceof SortedMap)
-			this.theDictionary = Collections.unmodifiableSortedMap((SortedMap<String, ? extends NSObject>) theMap);
-		else
-			this.theDictionary = Collections.unmodifiableSortedMap(new TreeMap<String, NSObject>(theMap));
+	public static NSDictionary fromMap(Map<String,?> map) {
+		TreeMap<String, NSObject> dictMap = new TreeMap<String,NSObject>();
+		for(Entry<String, ?> e : map.entrySet()) {
+			dictMap.put(e.getKey(), NSObject.fromObject(e.getValue()));
+		}
+		return new NSDictionary(dictMap);
 	}
+	
 	/**
 	 * Get the {@link NSObject} associated with <code>key</code>.
 	 * @param key The key to retrieve
@@ -87,9 +99,12 @@ public final class NSDictionary extends NSCollection {
 		return theDictionary;
 	}
 	/**
-	 * Get an unlinked modifiable {@link SortedMap} containing all values of this object.
-	 * This {@link SortedMap} can be modified and then used to create a new {@link NSDictionary}.
-	 * Each subsequent call to {@link #toMap()} will create a new {@link SortedMap}.
+	 * Get an unlinked modifiable {@link SortedMap}
+	 * containing all values of this object.
+	 * This {@link SortedMap} can be modified and then
+	 * used to create a new {@link NSDictionary}.
+	 * Each subsequent call to {@link #toMap()}
+	 * will create a new {@link SortedMap}.
 	 * Use {@link #getValue()} to get an unmodifiable {@link SortedMap}.
 	 * @return the {@link SortedMap}
 	 * @see #getValue()
@@ -102,7 +117,9 @@ public final class NSDictionary extends NSCollection {
 	/** {@inheritDoc} */
 	@Override
 	public List<NSObject> toList() {
-		return new ArrayList<NSObject>(theDictionary.values());
+		return Collections.unmodifiableList(
+				Arrays.asList(theDictionary.values().toArray(new NSObject[0]))
+			);
 	}
 	
 	/** {@inheritDoc} */

@@ -22,9 +22,13 @@ Project page on http://plist.sf.net/
 package net.sf.plist;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InvalidObjectException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -50,13 +54,22 @@ public abstract class NSObject {
 	public abstract Object getValue();
 	
 	/**
+	 * Internal function for returning the value without modifying it.
+	 * This function is internal because in some cases the raw value is mutable.
+	 * @return	the raw value
+	 */
+	Object getRawValue() {
+		return getValue();
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((getValue() == null) ? 0 : getValue().hashCode());
+		result = prime * result + ((getRawValue() == null) ? 0 : getRawValue().hashCode());
 		return result;
 	}
 	/**
@@ -69,10 +82,7 @@ public abstract class NSObject {
 		if (obj == null || getClass() != obj.getClass())
 			return false;
 		NSObject other = (NSObject) obj;
-		if (this.getValue() == null) {
-			if (other.getValue() != null)
-				return false;
-		} else if (!this.getValue().equals(other.getValue()))
+		if (!this.getRawValue().equals(other.getRawValue()))
 			return false;
 		return true;
 	}
@@ -152,7 +162,9 @@ public abstract class NSObject {
 	 * @return	the list
 	 */
 	public SortedMap<String, ? extends NSObject> toMap() {
-		return Collections.unmodifiableSortedMap(new TreeMap<String,NSObject>());
+		return Collections.unmodifiableSortedMap(
+				new TreeMap<String,NSObject>()
+			);
 	}
 	
 	/**
@@ -215,5 +227,50 @@ public abstract class NSObject {
 	 * @return	the double
 	 */
 	public abstract double toDouble();
+	
+	/**
+	 * Convert a Object to NSObject.
+	 * This works for every object in lang.java
+	 * which represents a primitive type,
+	 * Strings, Lists and Maps
+	 * @param object
+	 * @return
+	 * @throws InvalidObjectException 
+	 */
+	@SuppressWarnings("unchecked")
+	public static NSObject fromObject(Object object) {
+		if (object instanceof NSObject)
+			return (NSObject) object;
+		if (object instanceof Map)
+			return NSDictionary.fromMap((Map<String, ?>) object);
+		if (object instanceof List)
+			return NSArray.fromList((List<?>) object);
+		if (object instanceof Boolean)
+			return new NSBoolean(((Boolean) object).booleanValue());
+		if (object instanceof byte[])
+			return new NSData((byte[]) object);
+		if (object instanceof Date)
+			return new NSDate((Date) object);
+		if (object instanceof Number)
+			return NSNumber.createInstance((Number) object);
+		if (object instanceof String)
+			return new NSString(object.toString());
+		if (object instanceof InputStream) {
+			InputStream is = (InputStream) object;
+			if (!is.markSupported())
+				throw new IllegalArgumentException("object#markSupported() must be true, was false");
+			try {
+				int length = (int) is.skip(Integer.MAX_VALUE);
+				is.reset();
+				byte[] theData = new byte[length];
+				is.read(theData);
+				is.reset();
+				return new NSData(theData);
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Provided InputStream threw IOException while reading", e);
+			}
+		}
+		throw new IllegalArgumentException("Cannot not convert "+object.getClass().getName()+" to NSObject");
+	}
 
 }

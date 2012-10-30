@@ -21,8 +21,6 @@ Project page on http://plist.sf.net/
 */
 package net.sf.plist;
 
-import java.math.BigInteger;
-
 /**
  * <p>Represents a number.<br />
  * The {@link NSNumber} is either an {@link NSInteger} or a {@link NSReal}.</p>
@@ -35,9 +33,7 @@ public abstract class NSNumber extends NSObject {
 	 * @see #toNumber()
 	 */
 	@Override
-	public Number getValue() {
-		return toNumber();
-	}
+	public abstract Number getValue();
 	/**
 	 * Get the contents of this object as a {@link Number}.
 	 * @return the {@link Number}
@@ -50,8 +46,7 @@ public abstract class NSNumber extends NSObject {
 	 * @param number The number.
 	 */
 	public static NSNumber createInstance(Number number) {
-		if (number instanceof BigInteger
-			|| number instanceof Byte
+		if (number instanceof Byte
 			|| number instanceof Integer
 			|| number instanceof Long
 			|| number instanceof Short)
@@ -62,7 +57,7 @@ public abstract class NSNumber extends NSObject {
 	/** {@inheritDoc} */
 	@Override
 	public final boolean isTrue() {
-		return toNumber().longValue() != 0;
+		return toNumber().doubleValue() != 0.0;
 	}
 	
 }

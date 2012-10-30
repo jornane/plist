@@ -52,7 +52,10 @@ public final class NSString extends NSObject {
 	/** {@inheritDoc} */
 	@Override
 	public boolean isTrue() {
-		return theString.length()>0 && !"no".equalsIgnoreCase(theString) && !"false".equalsIgnoreCase(theString) && !"0".equalsIgnoreCase(theString);
+		return theString.length()>0
+				&& !"no".equalsIgnoreCase(theString)
+				&& !"false".equalsIgnoreCase(theString)
+				&& !"0".equalsIgnoreCase(theString);
 	}
 	
 	/** {@inheritDoc} */

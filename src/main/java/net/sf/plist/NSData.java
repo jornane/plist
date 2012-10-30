@@ -49,6 +49,11 @@ public final class NSData extends NSObject {
 	public ByteArrayInputStream getValue() {
 		return toStream();
 	}
+	/** {@inheritDoc} */
+	@Override
+	byte[] getRawValue() {
+		return theData;
+	}
 	/**
 	 * Get a {@link ByteArrayInputStream} which can be used to read the contents of this object.
 	 * This is the most cost-efficient way to retrieve the value contained in an {@link NSData} object.
@@ -78,7 +83,8 @@ public final class NSData extends NSObject {
 	}
 	
 	/**
-	 * Returns an unformatted hexadecimal representation of the content.
+	 * Returns an formatted hexadecimal representation of the content.
+	 * The formatting is equal to the one used by XCode.
 	 * @return	the hexadecimal string
 	 */
 	@Override
@@ -86,11 +92,11 @@ public final class NSData extends NSObject {
 		StringBuilder sb = new StringBuilder("<");
 		byte count = 0;
 		for(byte b : theData) {
-			if (b < 0x10 && b >= 0)
+			if ((b >> 4) == 0)
 				sb.append('0');
 			sb.append(Integer.toString(b&0xFF, 0x10));
 			count++;
-			if ((count & 0x3) == 0) // Slightly faster; no count=0 assignment required
+			if ((count & 0x3) == 0) // Slightly faster; no count=0 assignment required, count just overflows
 				sb.append(' ');
 		}
 		sb.append('>');
@@ -109,7 +115,7 @@ public final class NSData extends NSObject {
 	/** {@inheritDoc} */
 	@Override
 	public double toDouble() {
-		return Double.longBitsToDouble(toLong());
+		return toLong();
 	}
 
 }
