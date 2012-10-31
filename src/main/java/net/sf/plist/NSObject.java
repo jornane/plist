@@ -131,7 +131,7 @@ public abstract class NSObject {
 	 * if this object is a {@link NSDictionary}. Otherwise an <b>empty</b> list is returned.
 	 * @return	the list
 	 */
-	public List<? extends NSObject> toList() {
+	public List<NSObject> toList() {
 		return Collections.<NSObject>emptyList();
 	}
 	
@@ -178,7 +178,7 @@ public abstract class NSObject {
 	 * if this object is a {@link NSArray}. Otherwise an <b>empty</b> list is returned.
 	 * @return	the list
 	 */
-	public SortedMap<String, ? extends NSObject> toMap() {
+	public SortedMap<String, NSObject> toMap() {
 		return Collections.unmodifiableSortedMap(
 				new TreeMap<String,NSObject>()
 			);
@@ -290,9 +290,9 @@ public abstract class NSObject {
 	 * This works for every object in lang.java
 	 * which represents a primitive type,
 	 * Strings, Lists and Maps
-	 * @param object
-	 * @return
-	 * @throws InvalidObjectException 
+	 * @param object to convert to NSObject
+	 * @return the NSObject
+	 * @throws InvalidObjectException if the Object cannot be converted 
 	 */
 	@SuppressWarnings("unchecked")
 	public static NSObject fromObject(Object object) {

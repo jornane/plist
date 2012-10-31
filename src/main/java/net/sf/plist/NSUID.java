@@ -90,8 +90,8 @@ public final class NSUID extends NSObject {
 	 * @return	the map
 	 */
 	@Override
-	public SortedMap<String, NSInteger> toMap() {
-		TreeMap<String, NSInteger> result = new TreeMap<String,NSInteger>();
+	public SortedMap<String, NSObject> toMap() {
+		TreeMap<String, NSObject> result = new TreeMap<String,NSObject>();
 		result.put(CFUIDKEY, new NSInteger(cfUid));
 		return Collections.unmodifiableSortedMap(result);
 	}
@@ -102,8 +102,8 @@ public final class NSUID extends NSObject {
 	 * @return	the list
 	 */
 	@Override
-	public List<NSInteger> toList() {
-		return Collections.unmodifiableList(Arrays.asList(new NSInteger[]{new NSInteger(cfUid)}));
+	public List<NSObject> toList() {
+		return Collections.unmodifiableList(Arrays.asList(new NSObject[]{new NSInteger(cfUid)}));
 	}
 	
 	/** @see #getCfUid() */
