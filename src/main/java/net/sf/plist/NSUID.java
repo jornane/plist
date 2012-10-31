@@ -142,4 +142,19 @@ public final class NSUID extends NSObject {
 		return cfUid != 0;
 	}
 
+	/**
+	 * Returns itself because there is no Java equivalent for NSUID.
+	 * @return this
+	 */
+	@Override
+	public NSUID toObject() {
+		return this;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toBytes() {
+		return longToByteArray(toLong());
+	}
+
 }

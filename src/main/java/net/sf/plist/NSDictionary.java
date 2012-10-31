@@ -116,6 +116,16 @@ public final class NSDictionary extends NSCollection {
 	
 	/** {@inheritDoc} */
 	@Override
+	public SortedMap<String, ?> toObject() {
+		TreeMap<String, Object> result = new TreeMap<String,Object>();
+		for(Entry<String, ? extends NSObject> e : toMap().entrySet())
+			result.put(e.getKey(), e.getValue().toObject());
+		return result;
+	}
+
+	
+	/** {@inheritDoc} */
+	@Override
 	public List<NSObject> toList() {
 		return Collections.unmodifiableList(
 				Arrays.asList(theDictionary.values().toArray(new NSObject[0]))

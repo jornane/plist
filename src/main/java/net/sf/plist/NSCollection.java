@@ -1,5 +1,5 @@
 /*
-Property List Dictionary - LGPL 3.0 licensed
+Property List Collection - LGPL 3.0 licensed
 Copyright (C) 2012  Yørn de Jong
 
 This library is free software; you can redistribute it and/or
@@ -26,4 +26,15 @@ package net.sf.plist;
  * to make these classes, which contain {@link NSObject}s themselves,
  * easier identifiable. This class does not provide any functionality.
  */
-public abstract class NSCollection extends NSObject {/* overrides nothing*/}
+public abstract class NSCollection extends NSObject {
+	
+	/**
+	 * Collections can not be converted to a byte array
+	 * in a way that makes sense.
+	 */
+	@Override
+	public byte[] toBytes() {
+		return new byte[0];
+	}
+
+}

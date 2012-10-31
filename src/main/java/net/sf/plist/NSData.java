@@ -75,6 +75,11 @@ public final class NSData extends NSObject {
 		System.arraycopy(theData, 0, result, 0, theData.length);
 		return result;
 	}
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toObject() {
+		return toBytes();
+	}
 	
 	/** {@inheritDoc} */
 	@Override

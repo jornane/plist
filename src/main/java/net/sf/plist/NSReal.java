@@ -66,5 +66,11 @@ public final class NSReal extends NSNumber {
 	public long toLong() {
 		return Math.round(theDouble);
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toBytes() {
+		return longToByteArray(Double.doubleToLongBits(toDouble()));
+	}
 
 }

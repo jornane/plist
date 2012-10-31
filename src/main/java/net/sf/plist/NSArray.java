@@ -86,6 +86,14 @@ public final class NSArray extends NSCollection {
 	public NSObject[] array() {
 		return theList.clone();
 	}
+	/** {@inheritDoc} */
+	@Override
+	public List<Object> toObject() {
+		ArrayList<Object> result = new ArrayList<Object>();
+		for(NSObject e : toList())
+			result.add(e.toObject());
+		return result;
+	}
 	/**
 	 * {@inheritDoc}
 	 * @see #toList()

@@ -37,6 +37,21 @@ public final class NSDate extends NSObject {
 	static long EPOCH = 978307200000L;
 	
 	/**
+	 * Split a long into bytes, little endian
+	 * @param l the long
+	 * @param size the amount of bytes to output
+	 * @return the bytes that make up the long
+	 */
+	protected static byte[] longToByteArray(long l, byte size) {
+		byte[] result = new byte[size];
+		for(byte i=size;i>0;i--) {
+			result[i-1] = (byte)l;
+			l >>= 8;
+		}
+		return result;
+	}
+	
+	/**
 	 * Get the format used for dates in Property List files
 	 * @return the date format
 	 */
@@ -106,6 +121,12 @@ public final class NSDate extends NSObject {
 	@Override
 	public double toDouble() {
 		return (double)(getTime()-EPOCH)/1000D;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toBytes() {
+		return longToByteArray(toLong());
 	}
 
 }

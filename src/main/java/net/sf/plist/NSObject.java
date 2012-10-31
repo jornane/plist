@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InvalidObjectException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +46,24 @@ import java.util.TreeMap;
  */
 public abstract class NSObject {
 
+	/**
+	 * Split a long into bytes, little endian
+	 * @param l the long
+	 * @return the bytes that make up the long
+	 */
+	protected static byte[] longToByteArray(long l) {
+		byte[] result = new byte[8];
+		int i = 0;
+		while(l != 0 && ~l != 0) {
+			result[i] = (byte)l;
+			l >>= 8;
+			i++;
+		}
+		if (i == 0)
+			i++;
+		return Arrays.copyOf(result, i);
+	}
+	
 	NSObject() {/*not directly extendable outside this package*/}
 	
 	/**
@@ -140,9 +159,7 @@ public abstract class NSObject {
 	 * Get the raw data of the value.
 	 * @return	the data
 	 */
-	public byte[] toBytes() {
-		return new byte[0];
-	}
+	public abstract byte[] toBytes();
 	
 	/**
 	 * Get the value as a date.
@@ -165,6 +182,46 @@ public abstract class NSObject {
 		return Collections.unmodifiableSortedMap(
 				new TreeMap<String,NSObject>()
 			);
+	}
+	/**
+	 * Converts this NSObject to a normal Java object.
+	 * The result of this method can be used as an argument in
+	 * {@link #fromObject(Object)} which will convert the object back to an NSObject.
+	 * 
+	 * Note: This method will NOT convert NSUID objects,
+	 * because there is no Java equivalent for those.
+	 * @return	a standard Java object
+	 */
+	public Object toObject() {
+		return getValue();
+	}
+	/**
+	 * Convenience function to avoid casting.
+	 * This method will convert this NSObject to a map,
+	 * no matter what it was before.
+	 * If this NSObject was not of the type NSCollection,
+	 * the result may be an empty map.
+	 * @return map created from this NSObject
+	 */
+	public final SortedMap<String,?> toMapObject() {
+		if (this instanceof NSDictionary) {
+			return ((NSDictionary) this).toObject();
+		}
+		return toMap();
+	}
+	/**
+	 * Convenience function to avoid casting.
+	 * This method will convert this NSObject to a list,
+	 * no matter what it was before.
+	 * If this NSObject was not of the type NSCollection,
+	 * the result may be an empty list.
+	 * @return list created from this NSObject
+	 */
+	public final List<?> toListObject() {
+		if (this instanceof NSArray) {
+			return ((NSArray) this).toObject();
+		}
+		return toList();
 	}
 	
 	/**

@@ -68,4 +68,10 @@ public final class NSInteger extends NSNumber {
 		return new Double(theLong).doubleValue();
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public byte[] toBytes() {
+		return longToByteArray(toLong());
+	}
+	
 }

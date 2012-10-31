@@ -83,7 +83,7 @@ public final class PropertyListTest {
 	
 	@Test
 	@SuppressWarnings("boxing")
-	public void primitiveTest() {
+	public void fromObjectTest() {
 		@SuppressWarnings("unchecked")
 		TreeMap<String,NSObject> expected = (TreeMap<String, NSObject>) TESTMAP.clone();
 		expected.remove("UID");
@@ -101,6 +101,28 @@ public final class PropertyListTest {
 		actual.put("UTF", "⌘⇧⇪⌥");
 		
 		assertEquals(new NSDictionary(expected), NSObject.fromObject(actual));
+	}
+	
+	@Test
+	@SuppressWarnings("boxing")
+	public void toObjectTest() {
+		@SuppressWarnings("unchecked")
+		TreeMap<String,NSObject> actual = (TreeMap<String, NSObject>) TESTMAP.clone();
+		actual.remove("UID");
+		actual.remove("Dictionary");
+		actual.remove("Array");
+		actual.remove("Data"); // primitive arrays have #equals() implemented with ==
+		TreeMap<String,Object> expected = new TreeMap<String, Object>();
+		expected.put("Boolean", true);
+		expected.put("Date", CAL.getTime());
+		expected.put("Float", 42.28);
+		expected.put("Integer", 42L);
+		expected.put("Min", -1L);
+		expected.put("Story", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam turpis purus, tempor et luctus vel, mattis eget elit. Nullam sit amet mattis eros. Aliquam felis est, feugiat sed tincidunt tincidunt, malesuada viverra velit. In ut lorem id arcu cras amet.");
+		expected.put("String", "String");
+		expected.put("UTF", "⌘⇧⇪⌥");
+		
+		assertEquals(expected, new NSDictionary(actual).toObject());
 	}
 
 }
