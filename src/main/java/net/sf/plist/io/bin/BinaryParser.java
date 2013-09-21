@@ -250,7 +250,7 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	protected NSString parseASCII(byte length) throws IOException, PropertyListException {
 		byte[] buffer = new byte[getLength(length)];
 		stream.read(buffer);
-		return new NSString(new String(buffer, ASCIICHARSET));
+		return new NSString(new String(buffer, ASCIICHARSET.toString()));
 	}
 	
 	/**
@@ -263,7 +263,7 @@ public class BinaryParser extends PropertyListParser implements BinaryFields {
 	protected NSString parseUnicode(byte length) throws IOException, PropertyListException {
 		byte[] buffer = new byte[2*getLength(length)];
 		stream.read(buffer);
-		return new NSString(new String(buffer, UNICODECHARSET));
+		return new NSString(new String(buffer, UNICODECHARSET.toString()));
 	}
 	
 	/**

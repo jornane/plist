@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 
@@ -226,17 +227,21 @@ abstract class OperatingSystemPath {
 	 * @return	the UUID
 	 */
 	protected String buildMachineUUID() {
-		StringBuilder result = new StringBuilder();
 		try {
+			StringBuilder result = new StringBuilder();
 			// Basic UUID determination using MAC address,
 			// when determining using more modern methods fail
 			// or are not available
-			for(byte b : NetworkInterface.getNetworkInterfaces().nextElement().getHardwareAddress()) {
+			NetworkInterface nIf = NetworkInterface.getNetworkInterfaces().nextElement();
+			Method method = NetworkInterface.class.getMethod("getHardwareAddress");
+			for(byte b : (byte[]) method.invoke(nIf)) {
 				result.append(Integer.toString(b&0xFF, 0x10));
 			}
 			return result.toString();
-		} catch (SocketException e) {
+		} catch (Exception e) {
 			// When all else fails
+			// This method is unreliable,
+			// but the best we can do at this point
 			return System.getProperty("user.name")
 				+ System.getProperty("user.region")
 				+ System.getProperty("user.language")

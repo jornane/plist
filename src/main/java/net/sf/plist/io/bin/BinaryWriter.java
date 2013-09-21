@@ -307,7 +307,7 @@ public class BinaryWriter extends PropertyListWriter implements BinaryFields {
 	protected long writeString(NSString obj) throws IOException {
 		String str = obj.toString();
 		boolean isAscii = "".equals(ASCIIPATTERN.matcher(str).replaceFirst(""));
-		byte[] bytes = str.getBytes(isAscii ? ASCIICHARSET : UNICODECHARSET);
+		byte[] bytes = str.getBytes(isAscii ? ASCIICHARSET.toString() : UNICODECHARSET.toString());
 		long len = writeObjectHeader(str.length(), isAscii ? ASCIISTRING : UNICODESTRING);
 		stream.write(bytes);
 		return len+bytes.length;
